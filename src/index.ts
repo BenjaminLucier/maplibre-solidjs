@@ -1,4 +1,28 @@
 export { MapContext, type MapContextValue, useMap } from "./context.js";
+export {
+	AttributionControl,
+	type AttributionControlProps,
+	Control,
+	type ControlProps,
+	FULLSCREEN_CONTROL_EVENTS,
+	FullscreenControl,
+	type FullscreenControlEventProps,
+	type FullscreenControlProps,
+	GEOLOCATE_CONTROL_EVENTS,
+	GeolocateControl,
+	type GeolocateControlEventProps,
+	type GeolocateControlProps,
+	GlobeControl,
+	type GlobeControlProps,
+	LogoControl,
+	type LogoControlProps,
+	NavigationControl,
+	type NavigationControlProps,
+	ScaleControl,
+	type ScaleControlProps,
+	TerrainControl,
+	type TerrainControlProps,
+} from "./controls.js";
 export { FeatureState, type FeatureStateProps } from "./feature-state.js";
 export { MapImage, type MapImageProps, type MapImageSource } from "./image.js";
 export {
