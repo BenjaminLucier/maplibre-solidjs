@@ -1,5 +1,9 @@
 import type { FeatureCollection } from "geojson";
-import type { GeoJSONSource, VectorTileSource } from "maplibre-gl";
+import {
+	type GeoJSONSource,
+	Map as MapLibreMap,
+	type VectorTileSource,
+} from "maplibre-gl";
 import { createMemo, createSignal, Show } from "solid-js";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { Source, useSourceId } from "./source.js";
@@ -144,6 +148,32 @@ describe("Source", () => {
 		await tick();
 		expect(map.getSource("a")).toBeUndefined();
 		expect(map.getSource("b")).toBeDefined();
+	});
+
+	test("applies tileLodParams, and MapLibre's default once removed", async () => {
+		const spy = vi.spyOn(MapLibreMap.prototype, "setSourceTileLodParams");
+		const [lod, setLod] = createSignal<
+			| { maxZoomLevelsOnScreen: number; tileCountMaxMinRatio: number }
+			| undefined
+		>({ maxZoomLevelsOnScreen: 4, tileCountMaxMinRatio: 2 });
+		try {
+			rendered = renderMap(() => (
+				<Source
+					id="tiles"
+					type="vector"
+					tiles={["https://example.invalid/{z}/{x}/{y}.pbf"]}
+					tileLodParams={lod()}
+				/>
+			));
+			await styleLoaded(rendered.map);
+			expect(spy).toHaveBeenLastCalledWith(4, 2, "tiles");
+			setLod(undefined);
+			await tick();
+			expect(spy).toHaveBeenLastCalledWith(9.314, 3, "tiles");
+			expect(spy).toHaveBeenCalledTimes(2);
+		} finally {
+			spy.mockRestore();
+		}
 	});
 
 	test("waits for async data", async () => {

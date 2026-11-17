@@ -19,6 +19,7 @@ import type {
 import {
 	type Accessor,
 	createContext,
+	createEffect,
 	createMemo,
 	createSignal,
 	untrack,
@@ -32,7 +33,7 @@ import {
 	type EventProps,
 } from "./internal/events.js";
 import { generateId, specOf } from "./internal/props.js";
-import { reconcile } from "./internal/reconcile.js";
+import { attempt, reconcile } from "./internal/reconcile.js";
 import { applyRef } from "./internal/ref.js";
 import type { AllowUndefined } from "./internal/types.js";
 
@@ -73,7 +74,24 @@ interface SourceOwnProps<Instance> {
 	ref?: JSX.Ref<Instance>;
 	/** Layers that draw this source; they don't need a `source` prop. */
 	children?: JSX.Element;
+	/**
+	 * How many zoom levels of tiles may show at once when the map is pitched
+	 * (`map.setSourceTileLodParams(..., id)`). MapLibre's default is 9.314
+	 * and 3.
+	 */
+	tileLodParams?: TileLodParams | undefined;
 }
+
+/** Level-of-detail parameters for a source's tiles. */
+export interface TileLodParams {
+	maxZoomLevelsOnScreen: number;
+	tileCountMaxMinRatio: number;
+}
+
+const DEFAULT_TILE_LOD: TileLodParams = {
+	maxZoomLevelsOnScreen: 9.314,
+	tileCountMaxMinRatio: 3,
+};
 
 /**
  * `<Source>` props: a MapLibre source specification of any type, discriminated
@@ -105,6 +123,7 @@ const OWN_PROPS = new Set([
 	"id",
 	"ref",
 	"children",
+	"tileLodParams",
 	...Object.keys(SOURCE_EVENTS),
 ]);
 
@@ -174,6 +193,26 @@ export function Source(props: SourceProps): JSX.Element {
 	});
 
 	bindEvents(instance, props, SOURCE_EVENTS);
+
+	// Re-applied each time the source is added: a new source starts from
+	// MapLibre's default.
+	let lodApplied = false;
+	createEffect(
+		() => ({ source: instance(), lod: props.tileLodParams }),
+		({ source, lod }) => {
+			if (!source || (!lod && !lodApplied)) return;
+			lodApplied = lod !== undefined;
+			const { maxZoomLevelsOnScreen, tileCountMaxMinRatio } =
+				lod ?? DEFAULT_TILE_LOD;
+			attempt(ctx.map, () =>
+				ctx.map.setSourceTileLodParams(
+					maxZoomLevelsOnScreen,
+					tileCountMaxMinRatio,
+					source.id,
+				),
+			);
+		},
+	);
 
 	return <SourceContext value={id}>{props.children}</SourceContext>;
 }

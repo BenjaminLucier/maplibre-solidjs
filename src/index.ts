@@ -68,6 +68,7 @@ export {
 	type SourceInstance,
 	type SourceProps,
 	type SourceSpecification,
+	type TileLodParams,
 	useSourceId,
 } from "./source.js";
 export {
