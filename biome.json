@@ -1,13 +1,35 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
-	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-	"files": { "includes": ["**", "!**/dist", "!**/coverage"] },
-	"formatter": { "enabled": true, "indentStyle": "tab" },
-	"linter": { "enabled": true, "rules": { "preset": "recommended" } },
-	"javascript": { "formatter": { "quoteStyle": "double" } },
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": ["**", "!**/dist", "!**/coverage"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended"
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	},
 	"assist": {
 		"enabled": true,
-		"actions": { "source": { "organizeImports": "on" } }
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
 	},
 	"overrides": [
 		{
@@ -18,12 +40,21 @@
 						"useImportExtensions": {
 							"level": "error",
 							"fix": "safe",
-							"options": { "forceJsExtensions": true }
+							"options": {
+								"forceJsExtensions": true
+							}
 						}
+					},
+					"suspicious": {
+						"noShadowRestrictedNames": "off"
 					}
 				}
 			}
 		}
 	],
-	"markdown": { "formatter": { "enabled": false } }
+	"markdown": {
+		"formatter": {
+			"enabled": false
+		}
+	}
 }

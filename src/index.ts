@@ -1,1 +1,9 @@
-export { MapContext, useMap } from "./context.js";
+export { MapContext, type MapContextValue, useMap } from "./context.js";
+export { Map, type MapProps } from "./map.js";
+export { MAP_EVENTS, type MapEventProps } from "./map-events.js";
+export {
+	MAP_CAMERA_OPTIONS,
+	MAP_HANDLER_DEFAULTS,
+	MAP_OPTION_KINDS,
+	MAP_OPTION_SETTERS,
+} from "./map-options.js";

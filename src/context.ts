@@ -1,13 +1,59 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { createContext, useContext } from "solid-js";
+import { type Accessor, createContext, useContext } from "solid-js";
 
-/** The map that child components attach themselves to. */
-export const MapContext = createContext<MapLibreMap>();
+/** What `<Map>` shares with the components inside it. */
+export interface MapContextValue {
+	/** The map instance. It exists from the start, before its style loads. */
+	map: MapLibreMap;
+	/**
+	 * The map once its style has loaded. Pending before that, and again while
+	 * a new style loads, so reading it holds effects and `<Loading>`
+	 * boundaries until the map accepts sources and layers.
+	 */
+	ready: Accessor<MapLibreMap>;
+	/**
+	 * Changes whenever the style's contents may have changed: on `styledata`,
+	 * on `style.load`, and after a component adds or removes something.
+	 */
+	styleVersion: Accessor<number>;
+	/** Changes on every `style.load`, when a new style replaced the old one. */
+	styleRevision: Accessor<number>;
+	/** Marks the style as changed, after a component added or removed something. */
+	touch(): void;
+	/**
+	 * The ids of the sources and layers components own, so a style switch can
+	 * carry them over to the new style.
+	 */
+	owned: { sources: Set<string>; layers: Set<string> };
+}
+
+export const MapContext = createContext<MapContextValue>(undefined, {
+	name: "MapContext",
+});
+
+/** The enclosing `<Map>`'s shared state. Throws outside a `<Map>`. */
+export function useMapContext(): MapContextValue {
+	return useContext(MapContext);
+}
 
 /**
- * The enclosing map. Call it in a component body and keep the result: an
- * owner is needed to read context, and cleanups and event handlers have none.
+ * The enclosing map, once its style has loaded.
+ *
+ * The accessor is pending until then, and again while a new style loads.
+ * Read it in a tracking scope (an effect's compute function, a memo, JSX)
+ * and Solid waits for it: effects run once the map is ready, and a
+ * `<Loading>` boundary shows its fallback the first time. Call `useMap` in a
+ * component body; cleanups and event handlers have no owner to read context
+ * from.
+ *
+ * ```tsx
+ * function Zoom() {
+ *   const map = useMap();
+ *   const zoom = createMapState(() => map().getZoom(), ["zoom"]);
+ *   return <span>{zoom().toFixed(1)}</span>;
+ * }
+ * ```
  */
-export function useMap(): MapLibreMap {
-	return useContext(MapContext);
+export function useMap(): Accessor<MapLibreMap> {
+	return useMapContext().ready;
 }
