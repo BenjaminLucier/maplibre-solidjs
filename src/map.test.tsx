@@ -280,6 +280,43 @@ describe("useMap", () => {
 		expect(seen).toEqual([rendered.map]);
 	});
 
+	test("applies map properties outside MapOptions, and resets removed ones", async () => {
+		const [debug, setDebug] = createSignal<boolean | undefined>(true);
+		const [fov, setFov] = createSignal<number | undefined>(20);
+		const [padding, setPadding] = createSignal<
+			{ top: number; bottom: number; left: number; right: number } | undefined
+		>({ top: 10, bottom: 0, left: 30, right: 0 });
+		rendered = renderMap(undefined, {
+			get showTileBoundaries() {
+				return debug();
+			},
+			get verticalFieldOfView() {
+				return fov();
+			},
+			get padding() {
+				return padding();
+			},
+		});
+		const { map } = rendered;
+		await styleLoaded(map);
+		expect(map.showTileBoundaries).toBe(true);
+		expect(map.getVerticalFieldOfView()).toBeCloseTo(20);
+		expect(map.getPadding()).toMatchObject({ top: 10, left: 30 });
+		const defaultFov = new MapLibreMap({
+			container: document.createElement("div"),
+			style: EMPTY_STYLE,
+		});
+		const expectedFov = defaultFov.getVerticalFieldOfView();
+		defaultFov.remove();
+		setDebug(undefined);
+		setFov(undefined);
+		setPadding(undefined);
+		await tick();
+		expect(map.showTileBoundaries).toBe(false);
+		expect(map.getVerticalFieldOfView()).toBeCloseTo(expectedFov);
+		expect(map.getPadding()).toMatchObject({ top: 0, left: 0 });
+	});
+
 	test("suspends a <Loading> boundary until the map is ready", async () => {
 		function Zoom() {
 			const map = useMap();

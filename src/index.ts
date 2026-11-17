@@ -41,6 +41,8 @@ export {
 	MAP_HANDLER_DEFAULTS,
 	MAP_OPTION_KINDS,
 	MAP_OPTION_SETTERS,
+	MAP_PROPERTIES,
+	type MapPropertyProps,
 } from "./map-options.js";
 export {
 	MARKER_EVENTS,

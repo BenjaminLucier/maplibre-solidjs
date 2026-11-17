@@ -26,10 +26,13 @@ import {
 	MAP_HANDLER_DEFAULTS,
 	MAP_OPTION_KINDS,
 	MAP_OPTION_SETTERS,
+	MAP_PROPERTIES,
+	type MapPropertyProps,
 } from "./map-options.js";
 import { registerMap } from "./provider.js";
 
 export type MapProps = AllowUndefined<Omit<MapOptions, "container">> &
+	MapPropertyProps &
 	MapEventProps & {
 		/**
 		 * An existing element (or its id) to render the map into. Without it,
@@ -202,6 +205,19 @@ function applyOptions(
 					? handler.disable()
 					: handler.enable(typeof value === "object" ? value : undefined),
 			);
+		}
+	});
+
+	const propertyKeys = Object.keys(
+		MAP_PROPERTIES,
+	) as (keyof MapPropertyProps)[];
+	createEffect(read(propertyKeys), (next) => {
+		for (const key of changes(propertyKeys, next)) {
+			const apply = MAP_PROPERTIES[key as keyof MapPropertyProps] as (
+				map: MapLibreMap,
+				value: unknown,
+			) => void;
+			attempt(map, () => apply(map, next[key]));
 		}
 	});
 

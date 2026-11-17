@@ -129,3 +129,71 @@ export const MAP_CAMERA_OPTIONS = [
 	"roll",
 	"elevation",
 ] as const satisfies readonly OptionsOfKind<"camera">[];
+
+/** MapLibre's default vertical field of view, in degrees. */
+const DEFAULT_VERTICAL_FIELD_OF_VIEW = (0.6435011087932844 * 180) / Math.PI;
+
+/**
+ * Map state that isn't a `MapOptions` option: camera padding, the field of
+ * view, the missing-image resolver, and the debug switches MapLibre exposes
+ * as properties (`map.showTileBoundaries = true`).
+ */
+export interface MapPropertyProps {
+	/** Camera padding (`setPadding`). */
+	padding?: Parameters<MapLibreMap["setPadding"]>[0] | undefined;
+	/** The vertical field of view in degrees (`setVerticalFieldOfView`). */
+	verticalFieldOfView?: number | undefined;
+	/** Called for images the style uses but the map lacks (`setMissingStyleImageResolver`). */
+	missingStyleImageResolver?:
+		| (Parameters<MapLibreMap["setMissingStyleImageResolver"]>[0] & {})
+		| undefined;
+	/** Draws tile outlines and ids. */
+	showTileBoundaries?: boolean | undefined;
+	/** Draws the camera padding box. */
+	showPadding?: boolean | undefined;
+	/** Draws symbol collision boxes. */
+	showCollisionBoxes?: boolean | undefined;
+	/** Shows overdraw by blending each pixel. */
+	showOverdrawInspector?: boolean | undefined;
+	/** Redraws continuously, for benchmarking. */
+	repaint?: boolean | undefined;
+	/** Draws vertex wireframes. */
+	vertices?: boolean | undefined;
+}
+
+/**
+ * How each {@link MapPropertyProps} prop reaches the map, given the new value
+ * or `undefined` to go back to MapLibre's default. Exhaustive like
+ * {@link MAP_OPTION_KINDS}.
+ */
+export const MAP_PROPERTIES: {
+	[Key in keyof MapPropertyProps]-?: (
+		map: MapLibreMap,
+		value: MapPropertyProps[Key],
+	) => void;
+} = {
+	padding: (map, value) =>
+		map.setPadding(value ?? { top: 0, bottom: 0, left: 0, right: 0 }),
+	verticalFieldOfView: (map, value) =>
+		map.setVerticalFieldOfView(value ?? DEFAULT_VERTICAL_FIELD_OF_VIEW),
+	missingStyleImageResolver: (map, value) =>
+		map.setMissingStyleImageResolver(value ?? null),
+	showTileBoundaries: (map, value) => {
+		map.showTileBoundaries = value ?? false;
+	},
+	showPadding: (map, value) => {
+		map.showPadding = value ?? false;
+	},
+	showCollisionBoxes: (map, value) => {
+		map.showCollisionBoxes = value ?? false;
+	},
+	showOverdrawInspector: (map, value) => {
+		map.showOverdrawInspector = value ?? false;
+	},
+	repaint: (map, value) => {
+		map.repaint = value ?? false;
+	},
+	vertices: (map, value) => {
+		map.vertices = value ?? false;
+	},
+};
