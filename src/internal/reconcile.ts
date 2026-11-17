@@ -63,7 +63,8 @@ export function reconcile<Spec, Instance>(
 	const generation = createMemo((prev: number = 0): number => {
 		if (style === undefined) return prev;
 		if (style === "style") return ctx.styleRevision();
-		ctx.styleVersion();
+		// Not styleVersion: this component's own touch() must not re-run it.
+		ctx.styleData();
 		if (!current) return prev;
 		const { instance } = current;
 		return attempt(map, () => style(map, instance)) === true ? prev : prev + 1;

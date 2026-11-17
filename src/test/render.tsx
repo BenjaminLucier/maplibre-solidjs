@@ -1,5 +1,7 @@
 import { type JSX, render } from "@solidjs/web";
 import type { Map as MapLibreMap, StyleSpecification } from "maplibre-gl";
+import { OBSERVE } from "solid-js";
+import { attribution } from "solid-js/attribution";
 import { Map, type MapProps } from "../map.js";
 
 /** A style with nothing in it, so tests need no network. */
@@ -61,4 +63,19 @@ export async function styleLoaded(map: MapLibreMap): Promise<void> {
 /** Lets pending microtasks, Solid flushes and timers run. */
 export function tick(ms = 0): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Collects Solid's dev diagnostics (relay tears, async outside a boundary,
+ * ...) until `stop()`. Turns on the attribution engine, which some of them
+ * need to prove their cause.
+ */
+export function captureDiagnostics(): { stop(): string[] } {
+	attribution.enable();
+	const capture = OBSERVE?.diagnostics.capture();
+	if (!capture) throw new Error("Solid's diagnostics need its dev build");
+	return {
+		stop: () =>
+			capture.stop().map((event) => `${event.code}: ${event.message}`),
+	};
 }

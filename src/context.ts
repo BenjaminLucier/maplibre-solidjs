@@ -16,6 +16,12 @@ export interface MapContextValue {
 	 * on `style.load`, and after a component adds or removes something.
 	 */
 	styleVersion: Accessor<number>;
+	/**
+	 * Changes on MapLibre's `styledata` and `style.load` events only, not on
+	 * `touch()`: for checks that a style change dropped something, which a
+	 * component's own additions must not re-run.
+	 */
+	styleData: Accessor<number>;
 	/** Changes on every `style.load`, when a new style replaced the old one. */
 	styleRevision: Accessor<number>;
 	/** Marks the style as changed, after a component added or removed something. */

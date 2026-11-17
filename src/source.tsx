@@ -127,17 +127,35 @@ const OWN_PROPS = new Set([
 	...Object.keys(SOURCE_EVENTS),
 ]);
 
-const SourceContext = createContext<Accessor<string>>(undefined, {
+/** What a `<Source>` shares with the components inside it. */
+export interface EnclosingSource {
+	id: Accessor<string>;
+	/**
+	 * `true` once the source's specification has resolved and the map is
+	 * ready: the source is added in that same flush, before any child's
+	 * effect runs, since parent effects run first. Pending until then.
+	 * Children read this instead of polling the map, which would make them
+	 * re-run after the source's effect.
+	 */
+	added: Accessor<boolean>;
+}
+
+const SourceContext = createContext<EnclosingSource>(undefined, {
 	name: "SourceContext",
 });
 
-/** The id of the enclosing `<Source>`, or `undefined` outside one. */
-export function useSourceId(): Accessor<string> | undefined {
+/** The enclosing `<Source>`, or `undefined` outside one. */
+export function useEnclosingSource(): EnclosingSource | undefined {
 	try {
 		return useContext(SourceContext);
 	} catch {
 		return undefined;
 	}
+}
+
+/** The id of the enclosing `<Source>`, or `undefined` outside one. */
+export function useSourceId(): Accessor<string> | undefined {
+	return useEnclosingSource()?.id;
 }
 
 /**
@@ -165,11 +183,18 @@ export function Source(props: SourceProps): JSX.Element {
 		},
 	);
 
+	const spec = createMemo(() => ({
+		...specOf<SourceSpecification>(props, (key) => OWN_PROPS.has(key)),
+		id: id(),
+	}));
+	const added = createMemo(() => {
+		ctx.ready();
+		spec();
+		return true;
+	});
+
 	reconcile<SourceSpecification & { id: string }, SourceInstance>(ctx, {
-		spec: () => ({
-			...specOf<SourceSpecification>(props, (key) => OWN_PROPS.has(key)),
-			id: id(),
-		}),
+		spec,
 		create(map, { id, ...spec }) {
 			map.addSource(id, spec);
 			ctx.owned.sources.add(id);
@@ -214,7 +239,7 @@ export function Source(props: SourceProps): JSX.Element {
 		},
 	);
 
-	return <SourceContext value={id}>{props.children}</SourceContext>;
+	return <SourceContext value={{ id, added }}>{props.children}</SourceContext>;
 }
 
 /** Applies a changed specification through the source's setters, if it can. */

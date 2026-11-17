@@ -20,7 +20,7 @@ import { reconcile } from "./internal/reconcile.js";
 import { applyRef } from "./internal/ref.js";
 import { createBeforeId, createSourceExists } from "./internal/style.js";
 import type { AllowUndefined } from "./internal/types.js";
-import { useSourceId } from "./source.js";
+import { useEnclosingSource } from "./source.js";
 
 /** `<Layer>` event props: MapLibre's layer-scoped events (`map.on(type, layerId, ...)`). */
 export const LAYER_EVENTS = {
@@ -109,7 +109,8 @@ const OWN_PROPS = new Set([
  */
 export function Layer(props: LayerProps): JSX.Element {
 	const ctx = useMapContext();
-	const sourceId = useSourceId();
+	const enclosing = useEnclosingSource();
+	const sourceId = enclosing?.id;
 	const fallbackId = generateId("layer");
 	const id = createMemo(() => props.id ?? fallbackId);
 
@@ -118,7 +119,7 @@ export function Layer(props: LayerProps): JSX.Element {
 			? undefined
 			: ((props as { source?: string }).source ?? sourceId?.()),
 	);
-	const sourceExists = createSourceExists(ctx, source);
+	const sourceExists = createSourceExists(ctx, source, enclosing);
 	const before = createBeforeId(ctx, () => props.beforeId);
 
 	reconcile<LayerSpec, string>(ctx, {

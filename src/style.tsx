@@ -13,7 +13,7 @@ import { specOf } from "./internal/props.js";
 import { reconcile } from "./internal/reconcile.js";
 import { createSourceExists } from "./internal/style.js";
 import type { AllowUndefined } from "./internal/types.js";
-import { useSourceId } from "./source.js";
+import { useEnclosingSource } from "./source.js";
 
 /**
  * Sets a root property of the style while mounted (`setSky`, `setLight`,
@@ -96,9 +96,9 @@ export type TerrainProps = AllowUndefined<
  */
 export function Terrain(props: TerrainProps): JSX.Element {
 	const ctx = useMapContext();
-	const sourceId = useSourceId();
-	const source = createMemo(() => props.source ?? sourceId?.());
-	const sourceExists = createSourceExists(ctx, source);
+	const enclosing = useEnclosingSource();
+	const source = createMemo(() => props.source ?? enclosing?.id());
+	const sourceExists = createSourceExists(ctx, source, enclosing);
 	styleProperty<TerrainSpecification>(
 		ctx,
 		() => {

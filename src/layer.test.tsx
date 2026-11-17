@@ -5,6 +5,7 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { CustomLayer, Layer } from "./layer.js";
 import { Source } from "./source.js";
 import {
+	captureDiagnostics,
 	EMPTY_STYLE,
 	type Rendered,
 	renderMap,
@@ -204,6 +205,30 @@ describe("Layer", () => {
 		expect(onClick).toHaveBeenCalledOnce();
 		expect(clicked).toEqual([{ name: "world" }]);
 		expect(onOtherClick).not.toHaveBeenCalled();
+	});
+
+	test("adds sources and layers without Solid reporting a relay tear", async () => {
+		// A relay tear: a computation re-running because another component's
+		// effect wrote a signal it had already read in the same flush.
+		const diagnostics = captureDiagnostics();
+		rendered = renderMap(() => (
+			<>
+				<Source id="a" type="geojson" data={world}>
+					<Layer type="circle" filter={["has", "x"]} />
+					<Layer type="circle" filter={["!", ["has", "x"]]} />
+				</Source>
+				<Source id="b" type="geojson" data={world}>
+					<Layer type="fill" />
+					<Layer type="line" beforeId="later" />
+				</Source>
+			</>
+		));
+		await styleLoaded(rendered.map);
+		await tick(50);
+		expect(rendered.map.getLayersOrder()).toHaveLength(4);
+		expect(
+			diagnostics.stop().filter((d) => d.startsWith("EFFECT_RELAY_TEAR")),
+		).toEqual([]);
 	});
 
 	test("hands the style layer to ref", async () => {

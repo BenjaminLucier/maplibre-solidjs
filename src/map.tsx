@@ -111,16 +111,21 @@ export function Map(props: MapProps): JSX.Element {
 	const [styleLoaded, setStyleLoaded] = createSignal(false);
 	const [styleVersion, setStyleVersion] = createSignal(0);
 	const [styleRevision, setStyleRevision] = createSignal(0);
+	const [styleData, setStyleData] = createSignal(0);
 	const touch = () => setStyleVersion((v) => v + 1);
+	const changed = () => {
+		setStyleData((v) => v + 1);
+		touch();
+	};
 	map.on("styledataloading", () => setStyleLoaded(false));
 	map.on("style.load", () => {
 		setStyleLoaded(true);
 		setStyleRevision((r) => r + 1);
-		touch();
+		changed();
 	});
 	map.on("styledata", () => {
 		if (map.isStyleLoaded()) setStyleLoaded(true);
-		touch();
+		changed();
 	});
 
 	const ctx: MapContextValue = {
@@ -130,6 +135,7 @@ export function Map(props: MapProps): JSX.Element {
 		),
 		styleVersion,
 		styleRevision,
+		styleData,
 		touch,
 		owned,
 	};
