@@ -50,20 +50,21 @@ export function Layout(props: { children?: JSX.Element }) {
 	return (
 		<div class="flex min-h-screen flex-col">
 			<header class="sticky top-0 z-20 border-b border-slate-200 bg-white/85 backdrop-blur dark:border-slate-800 dark:bg-slate-950/85">
-				<div class="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4">
+				<div class="mx-auto flex h-14 max-w-6xl items-center gap-1 px-4 sm:gap-2">
 					<a
 						href={paths()}
+						aria-label="maplibre-solidjs home"
 						class="mr-auto flex items-center gap-2 font-semibold text-slate-900 dark:text-white"
 					>
 						<MapIcon size={20} class="text-blue-600 dark:text-blue-400" />
-						<span>maplibre-solidjs</span>
+						<span class="hidden sm:inline">maplibre-solidjs</span>
 					</a>
 					<nav class="flex items-center gap-1 text-sm">
 						<For each={NAV}>
 							{(item) => (
 								<a
 									href={item.href()}
-									class="rounded-md px-2.5 py-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 aria-[current]:font-medium aria-[current]:text-blue-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white dark:aria-[current]:text-blue-400"
+									class="rounded-md px-2 py-1.5 text-slate-600 sm:px-2.5 hover:bg-slate-100 hover:text-slate-900 aria-[current]:font-medium aria-[current]:text-blue-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white dark:aria-[current]:text-blue-400"
 								>
 									{item.label}
 								</a>

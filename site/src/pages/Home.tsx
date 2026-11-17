@@ -138,7 +138,7 @@ export default function Home() {
 	return (
 		<>
 			<section class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 md:grid-cols-2 md:py-20">
-				<div>
+				<div class="min-w-0">
 					<p class="mb-3 text-sm font-medium text-blue-600 dark:text-blue-400">
 						For SolidJS 2 and MapLibre GL JS 6
 					</p>

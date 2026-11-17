@@ -18,7 +18,7 @@ const SECTIONS = [
 export default function Guide() {
 	usePageTitle(() => "Guide");
 	return (
-		<div class="mx-auto grid max-w-6xl gap-10 px-4 py-10 lg:grid-cols-[200px_1fr]">
+		<div class="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-10 px-4 py-10 lg:grid-cols-[200px_minmax(0,1fr)]">
 			<aside class="hidden lg:block">
 				<nav class="sticky top-20 grid gap-1 text-sm">
 					<For each={SECTIONS}>
@@ -103,83 +103,85 @@ export function App() {
 					After construction, each kind of prop reaches MapLibre the way
 					MapLibre allows:
 				</p>
-				<table>
-					<thead>
-						<tr>
-							<th>Props</th>
-							<th>Applied with</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>
-								Options with a setter: <code>minZoom</code>,{" "}
-								<code>maxBounds</code>, <code>pixelRatio</code>, …
-							</td>
-							<td>
-								The setter. Removing the prop restores MapLibre's default.
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Handlers: <code>scrollZoom</code>, <code>dragPan</code>, …
-							</td>
-							<td>
-								<code>enable(options)</code> or <code>disable()</code>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Camera: <code>center</code>, <code>zoom</code>,{" "}
-								<code>bearing</code>, <code>pitch</code>, <code>roll</code>,{" "}
-								<code>elevation</code>
-							</td>
-							<td>
-								<code>jumpTo</code>, skipped when the map is already there, so
-								props fed from <code>onMove</code> don't fight the user
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<code>bounds</code>
-							</td>
-							<td>
-								<code>fitBounds(bounds, fitBoundsOptions)</code>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<code>style</code>
-							</td>
-							<td>
-								<code>setStyle</code>, diffed; components' sources and layers
-								are carried over
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<code>globalState</code>
-							</td>
-							<td>
-								<code>setGlobalStateProperty</code> for the keys that changed
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<code>padding</code>, <code>verticalFieldOfView</code>, debug
-								flags like <code>showTileBoundaries</code>
-							</td>
-							<td>Their setters and properties</td>
-						</tr>
-						<tr>
-							<td>
-								Everything else: <code>hash</code>,{" "}
-								<code>canvasContextAttributes</code>, …
-							</td>
-							<td>Construction only, as with MapLibre itself</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="overflow-x-auto">
+					<table>
+						<thead>
+							<tr>
+								<th>Props</th>
+								<th>Applied with</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									Options with a setter: <code>minZoom</code>,{" "}
+									<code>maxBounds</code>, <code>pixelRatio</code>, …
+								</td>
+								<td>
+									The setter. Removing the prop restores MapLibre's default.
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Handlers: <code>scrollZoom</code>, <code>dragPan</code>, …
+								</td>
+								<td>
+									<code>enable(options)</code> or <code>disable()</code>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Camera: <code>center</code>, <code>zoom</code>,{" "}
+									<code>bearing</code>, <code>pitch</code>, <code>roll</code>,{" "}
+									<code>elevation</code>
+								</td>
+								<td>
+									<code>jumpTo</code>, skipped when the map is already there, so
+									props fed from <code>onMove</code> don't fight the user
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<code>bounds</code>
+								</td>
+								<td>
+									<code>fitBounds(bounds, fitBoundsOptions)</code>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<code>style</code>
+								</td>
+								<td>
+									<code>setStyle</code>, diffed; components' sources and layers
+									are carried over
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<code>globalState</code>
+								</td>
+								<td>
+									<code>setGlobalStateProperty</code> for the keys that changed
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<code>padding</code>, <code>verticalFieldOfView</code>, debug
+									flags like <code>showTileBoundaries</code>
+								</td>
+								<td>Their setters and properties</td>
+							</tr>
+							<tr>
+								<td>
+									Everything else: <code>hash</code>,{" "}
+									<code>canvasContextAttributes</code>, …
+								</td>
+								<td>Construction only, as with MapLibre itself</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 				<p>
 					Other components work the same way: a <code>&lt;Layer&gt;</code>'s{" "}
 					<code>paint</code> goes through <code>setPaintProperty</code> one
