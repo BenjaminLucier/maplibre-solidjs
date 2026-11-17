@@ -20,7 +20,13 @@ pnpm install
 pnpm exec playwright install chromium   # once: tests run in headless Chromium
 pnpm test:watch   # tests in watch mode
 pnpm build        # dist/ (ESM and type declarations)
+pnpm site:dev     # the docs site, against the library's source
 ```
+
+The docs and demo site lives in `site/`, a private workspace package that
+imports the library from `src/` directly. Its examples are real files in
+`site/src/examples/`: the site runs each one and shows its source. It is
+deployed to GitHub Pages from `main`.
 
 ## Checks
 
@@ -34,6 +40,7 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm pack --dry-run
+pnpm site:build
 ```
 
 ## Commit messages and PR titles

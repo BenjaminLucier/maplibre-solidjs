@@ -1,0 +1,24 @@
+{
+	"name": "maplibre-solidjs-site",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc -b && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@lucide/solid": "^1.74.0",
+		"@solidjs/router": "^2.0.0",
+		"@solidjs/web": "catalog:",
+		"maplibre-gl": "catalog:",
+		"solid-js": "catalog:"
+	},
+	"devDependencies": {
+		"@solidjs/vite-plugin": "catalog:",
+		"@tailwindcss/vite": "^4.3.5",
+		"tailwindcss": "^4.3.5",
+		"typescript": "catalog:",
+		"vite": "catalog:"
+	}
+}

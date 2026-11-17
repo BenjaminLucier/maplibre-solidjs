@@ -50,11 +50,26 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["site/**"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noShadowRestrictedNames": "off"
+					}
+				}
+			}
 		}
 	],
 	"markdown": {
 		"formatter": {
 			"enabled": false
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
 		}
 	}
 }
