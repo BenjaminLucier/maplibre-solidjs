@@ -27,6 +27,7 @@ import {
 	MAP_OPTION_KINDS,
 	MAP_OPTION_SETTERS,
 } from "./map-options.js";
+import { registerMap } from "./provider.js";
 
 export type MapProps = AllowUndefined<Omit<MapOptions, "container">> &
 	MapEventProps & {
@@ -131,6 +132,10 @@ export function Map(props: MapProps): JSX.Element {
 	};
 
 	bindEvents(() => map, props, MAP_EVENTS, { immediate: true });
+	registerMap(
+		untrack(() => props.id),
+		ctx,
+	);
 	applyOptions(map, ctx.ready, props, applied, owned);
 	applyRef(
 		untrack(() => props.ref),
