@@ -7,3 +7,13 @@ export {
 	MAP_OPTION_KINDS,
 	MAP_OPTION_SETTERS,
 } from "./map-options.js";
+export {
+	SOURCE_EVENTS,
+	SOURCE_SETTERS,
+	Source,
+	type SourceEventProps,
+	type SourceInstance,
+	type SourceProps,
+	type SourceSpecification,
+	useSourceId,
+} from "./source.js";

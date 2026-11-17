@@ -47,7 +47,7 @@ interface Evented {
  */
 export function bindEvents(
 	target: Accessor<Evented | undefined>,
-	props: Readonly<Record<string, unknown>>,
+	props: object,
 	table: EventTable,
 	options: { layer?: Accessor<string | undefined>; immediate?: boolean } = {},
 ): void {
@@ -83,7 +83,7 @@ export function bindEvents(
 			if (bound.has(prop)) continue;
 			const type = table[prop] as string;
 			const listener = (event: unknown) => {
-				const handler = props[prop];
+				const handler = (props as Record<string, unknown>)[prop];
 				if (typeof handler === "function") handler(event);
 			};
 			const args = (
@@ -96,7 +96,7 @@ export function bindEvents(
 
 	const active = createMemo(() =>
 		Object.keys(table)
-			.filter((prop) => props[prop] != null)
+			.filter((prop) => (props as Record<string, unknown>)[prop] != null)
 			.join(" "),
 	);
 	if (options.immediate) untrack(() => sync(target(), layer?.(), active()));

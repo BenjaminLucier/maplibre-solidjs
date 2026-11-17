@@ -69,11 +69,12 @@ export function reconcile<Spec, Instance>(
 		return attempt(map, () => style(map, instance)) === true ? prev : prev + 1;
 	});
 
-	const release = () => {
+	const release = (disposing = false) => {
 		if (!current) return;
 		const { instance, spec } = current;
 		current = undefined;
-		options.instance?.(undefined);
+		// No signal writes while the owner is being disposed.
+		if (!disposing) options.instance?.(undefined);
 		attempt(map, () => options.destroy(map, instance, spec));
 	};
 
@@ -113,7 +114,7 @@ export function reconcile<Spec, Instance>(
 		},
 	);
 
-	onCleanup(release);
+	onCleanup(() => release(true));
 }
 
 const FAILED: unique symbol = Symbol("failed");
