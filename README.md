@@ -34,13 +34,22 @@ Import MapLibre's stylesheet once:
 import "maplibre-gl/dist/maplibre-gl.css";
 ```
 
-With Vite, keep MapLibre out of dependency pre-bundling, so its worker
-loads:
+MapLibre finds its web worker relative to its own module at runtime, which
+bundlers can't follow, so production builds ship without it. With Vite,
+bundle the worker explicitly and hand MapLibre its URL, once, before the
+first map:
 
 ```ts
-// vite.config.ts
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
+```
+
+```ts
+// vite.config.ts: the worker is an ES module.
 export default defineConfig({
-	optimizeDeps: { exclude: ["maplibre-gl"] },
+	worker: { format: "es" },
 });
 ```
 
