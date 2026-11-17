@@ -1,0 +1,7 @@
+# solid-js and @solidjs/web 2.0.0 were published on 2026-11-17, inside the
+# minimum release age, so pnpm needed these exceptions to install them. Remove
+# the list once those versions are older than the cooldown.
+minimumReleaseAgeExclude:
+  - "@solidjs/signals@2.0.0"
+  - "@solidjs/web@2.0.0"
+  - solid-js@2.0.0

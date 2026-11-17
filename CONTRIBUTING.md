@@ -1,0 +1,61 @@
+# Contributing
+
+Thanks for helping out! Bug reports, ideas and pull requests are welcome.
+
+## Before you start
+
+- **Bugs and small fixes:** a PR is welcome, ideally with a failing test.
+- **Features and larger changes:** please open an issue first so we can agree
+  on the approach before you spend time on it.
+- Keep PRs small and focused, and justify every new dependency.
+- By taking part you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Building
+
+You need Node (the version in `.nvmrc`; with fnm or nvm, `fnm use`) and pnpm
+(the version in `packageManager`; `corepack enable` picks it up).
+
+```sh
+pnpm install
+pnpm test:watch   # tests in watch mode
+pnpm build        # dist/ (ESM and type declarations)
+```
+
+## Checks
+
+CI runs the following, and all must pass:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm pack --dry-run
+```
+
+## Commit messages and PR titles
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/),
+since the changelog is generated from them: `feat:` for new behaviour, `fix:`
+for bugs, and `docs`, `refactor`, `test`, `perf`, `ci` or `chore` for the
+rest. Mark breaking changes with `!`, as in `feat!: ...`.
+
+PRs are squash-merged, so the **PR title** becomes the commit message, and CI
+checks that it is a Conventional Commit.
+
+## Who decides
+
+This project is maintained by one person, who reviews every change and makes
+the final call on direction. That's a matter of scale, not a closed door: if
+you contribute regularly and want a bigger role, such as reviewing, owning a
+part of the code or helping steer it, say so in an issue. This section will
+change as the project gains maintainers.
+
+## License
+
+Unless you explicitly state otherwise, any contribution intentionally
+submitted for inclusion in this project by you shall be licensed under the
+project's license (`MIT OR Apache-2.0`), as defined in the Apache-2.0
+license, without any additional terms or conditions.
+There is no CLA and no sign-off requirement.

@@ -1,0 +1,68 @@
+{
+	"name": "maplibre-solidjs",
+	"version": "0.0.0",
+	"description": "SolidJS 2 components for MapLibre GL JS.",
+	"type": "module",
+	"license": "MIT OR Apache-2.0",
+	"author": "Benjamin Lucier",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/BenjaminLucier/maplibre-solidjs.git"
+	},
+	"bugs": {
+		"url": "https://github.com/BenjaminLucier/maplibre-solidjs/issues"
+	},
+	"homepage": "https://github.com/BenjaminLucier/maplibre-solidjs#readme",
+	"keywords": [
+		"solid",
+		"solidjs",
+		"maplibre",
+		"maplibre-gl",
+		"map",
+		"gis"
+	],
+	"sideEffects": false,
+	"packageManager": "pnpm@12.21.0",
+	"engines": {
+		"node": ">=24"
+	},
+	"files": [
+		"dist",
+		"LICENSE-MIT",
+		"LICENSE-APACHE"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
+	"scripts": {
+		"build": "vite build && tsc -p tsconfig.build.json",
+		"typecheck": "tsc -b",
+		"lint": "biome check",
+		"format": "biome check --write",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"peerDependencies": {
+		"@solidjs/web": "^2.0.0",
+		"maplibre-gl": "^6.0.0",
+		"solid-js": "^2.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.6.8",
+		"@solidjs/vite-plugin": "3.0.0-next.57",
+		"@solidjs/web": "^2.0.0",
+		"happy-dom": "^21.0.4",
+		"maplibre-gl": "^6.0.0",
+		"solid-js": "^2.0.0",
+		"typescript": "^7.0.2",
+		"vite": "^8.3.8",
+		"vitest": "^5.1.0"
+	}
+}

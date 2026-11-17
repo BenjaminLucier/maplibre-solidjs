@@ -1,0 +1,90 @@
+name: Release
+
+# release-please keeps a release PR open with the next version and the
+# CHANGELOG.md entry, built from the Conventional Commits on main. Merging it
+# tags the release and creates the GitHub release; the jobs after it pack the
+# package and publish it to npm through trusted publishing (OIDC, no token;
+# provenance is automatic). The trusted publisher on npmjs.com names this
+# repository and this file, `release.yml`.
+#
+# "Run workflow" packs and publishes main as it stands, without a new release:
+# the way to finish a publish that failed after the GitHub release was created.
+# A version already on npm is skipped.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      # A personal access token, not GITHUB_TOKEN: pull requests opened with
+      # GITHUB_TOKEN start no workflows, so the release PR would never get the
+      # CI check the branch ruleset requires.
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+
+  # Packing goes through pnpm, which applies `publishConfig`; the publish job
+  # only uploads the tarball and holds the only id-token permission.
+  pack:
+    needs: release-please
+    if: >-
+      needs.release-please.outputs.release_created == 'true' ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm pack --pack-destination "$RUNNER_TEMP/tarballs"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tarballs
+          path: ${{ runner.temp }}/tarballs
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tarballs
+          path: tarballs
+      - run: |
+          # `./` keeps npm from reading `tarballs/<file>` as a GitHub
+          # `user/repo` shorthand.
+          tarball="$(ls ./tarballs/maplibre-solidjs-*.tgz)"
+          version="${tarball##*-}"; version="${version%.tgz}"
+          if npm view "maplibre-solidjs@$version" version >/dev/null 2>&1; then
+            echo "maplibre-solidjs@$version is already on npm"
+          else
+            npm publish "$tarball" --access public
+          fi
