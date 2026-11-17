@@ -26,3 +26,19 @@ export {
 	type SourceSpecification,
 	useSourceId,
 } from "./source.js";
+export {
+	FontFaces,
+	type FontFacesProps,
+	Glyphs,
+	type GlyphsProps,
+	Light,
+	type LightProps,
+	Projection,
+	type ProjectionProps,
+	Sky,
+	type SkyProps,
+	Sprite,
+	type SpriteProps,
+	Terrain,
+	type TerrainProps,
+} from "./style.js";

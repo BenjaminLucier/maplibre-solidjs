@@ -18,6 +18,7 @@ import {
 import { generateId, specOf } from "./internal/props.js";
 import { reconcile } from "./internal/reconcile.js";
 import { applyRef } from "./internal/ref.js";
+import { createBeforeId, createSourceExists } from "./internal/style.js";
 import type { AllowUndefined } from "./internal/types.js";
 import { useSourceId } from "./source.js";
 
@@ -117,18 +118,8 @@ export function Layer(props: LayerProps): JSX.Element {
 			? undefined
 			: ((props as { source?: string }).source ?? sourceId?.()),
 	);
-	const sourceExists = createMemo(() => {
-		const id = source();
-		ctx.styleVersion();
-		return id === undefined || ctx.map.getSource(id) !== undefined;
-	});
-	const before = createMemo(() => {
-		const before = props.beforeId;
-		ctx.styleVersion();
-		return before !== undefined && ctx.map.getLayer(before)
-			? before
-			: undefined;
-	});
+	const sourceExists = createSourceExists(ctx, source);
+	const before = createBeforeId(ctx, () => props.beforeId);
 
 	reconcile<LayerSpec, string>(ctx, {
 		spec() {
@@ -232,13 +223,7 @@ export interface CustomLayerProps {
  */
 export function CustomLayer(props: CustomLayerProps): JSX.Element {
 	const ctx = useMapContext();
-	const before = createMemo(() => {
-		const before = props.beforeId;
-		ctx.styleVersion();
-		return before !== undefined && ctx.map.getLayer(before)
-			? before
-			: undefined;
-	});
+	const before = createBeforeId(ctx, () => props.beforeId);
 
 	reconcile<
 		{ layer: CustomLayerInterface; before: string | undefined },
