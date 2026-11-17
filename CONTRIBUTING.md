@@ -17,6 +17,7 @@ You need Node (the version in `.nvmrc`; with fnm or nvm, `fnm use`) and pnpm
 
 ```sh
 pnpm install
+pnpm exec playwright install chromium   # once: tests run in headless Chromium
 pnpm test:watch   # tests in watch mode
 pnpm build        # dist/ (ESM and type declarations)
 ```
@@ -27,6 +28,7 @@ CI runs the following, and all must pass:
 
 ```sh
 pnpm install --frozen-lockfile
+pnpm exec playwright install --with-deps --only-shell chromium
 pnpm lint
 pnpm typecheck
 pnpm test

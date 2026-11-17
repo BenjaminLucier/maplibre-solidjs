@@ -1,17 +1,25 @@
 import solid from "@solidjs/vite-plugin";
+import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
+// Tests run in real Chromium: MapLibre needs WebGL and real layout, and a fake
+// map would only test our idea of MapLibre.
 export default defineConfig({
 	plugins: [solid()],
 	test: {
-		environment: "happy-dom",
-		// Solid ships separate server and browser builds, picked by export
-		// condition. Tests must run the browser build, so Vite processes Solid
-		// itself instead of leaving it to Node's resolver.
-		server: { deps: { inline: [/solid-js/, /@solidjs\//] } },
 		include: ["src/**/*.test.{ts,tsx}"],
+		browser: {
+			enabled: true,
+			headless: true,
+			provider: playwright(),
+			instances: [{ browser: "chromium" }],
+			screenshotFailures: false,
+		},
 	},
 	resolve: {
 		conditions: ["browser", "development"],
 	},
+	// MapLibre loads its worker from a URL relative to its own module, which
+	// Vite's dependency pre-bundling would move.
+	optimizeDeps: { exclude: ["maplibre-gl"] },
 });

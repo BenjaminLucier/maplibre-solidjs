@@ -30,6 +30,8 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Tests run in headless Chromium: MapLibre needs WebGL.
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
