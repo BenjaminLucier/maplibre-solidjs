@@ -1,4 +1,5 @@
 export { MapContext, type MapContextValue, useMap } from "./context.js";
+export { FeatureState, type FeatureStateProps } from "./feature-state.js";
 export { MapImage, type MapImageProps, type MapImageSource } from "./image.js";
 export {
 	CustomLayer,
