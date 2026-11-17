@@ -56,6 +56,7 @@ export {
 	type PopupEventProps,
 	type PopupProps,
 } from "./popup.js";
+export { createMapEvent, createMapState } from "./primitives.js";
 export {
 	SOURCE_EVENTS,
 	SOURCE_SETTERS,
