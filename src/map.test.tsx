@@ -30,6 +30,23 @@ describe("Map", () => {
 		expect(map.getCanvas().width).toBeGreaterThan(0);
 	});
 
+	test("keeps MapLibre's own elements beside its children", async () => {
+		// Components that render nothing (sources, layers, controls) resolve to
+		// an array of nulls, which must not clear the container.
+		const Nothing = () => null;
+		rendered = renderMap(() => (
+			<>
+				<Nothing />
+				<Nothing />
+			</>
+		));
+		const { map } = rendered;
+		await styleLoaded(map);
+		const container = map.getContainer();
+		expect(container.querySelector(".maplibregl-canvas")).not.toBeNull();
+		expect(container.querySelector(".maplibregl-ctrl-top-left")).not.toBeNull();
+	});
+
 	test("renders into an existing container", async () => {
 		const element = document.createElement("div");
 		element.style.cssText = "width: 200px; height: 100px";

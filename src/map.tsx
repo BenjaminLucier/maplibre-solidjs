@@ -140,7 +140,10 @@ export function Map(props: MapProps): JSX.Element {
 
 	const content = () => <MapContext value={ctx}>{props.children}</MapContext>;
 	if (!element) return content();
-	insert(element, content);
+	// Insert before a marker: without one, Solid owns all of the element's
+	// children and clears MapLibre's canvas and controls when they change.
+	const marker = element.appendChild(document.createTextNode(""));
+	insert(element, content, marker);
 	return element;
 }
 
