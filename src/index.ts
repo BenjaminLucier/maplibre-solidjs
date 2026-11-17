@@ -1,4 +1,13 @@
 export { MapContext, type MapContextValue, useMap } from "./context.js";
+export {
+	CustomLayer,
+	type CustomLayerProps,
+	LAYER_EVENTS,
+	Layer,
+	type LayerEventProps,
+	type LayerProps,
+	type StyleLayer,
+} from "./layer.js";
 export { Map, type MapProps } from "./map.js";
 export { MAP_EVENTS, type MapEventProps } from "./map-events.js";
 export {
