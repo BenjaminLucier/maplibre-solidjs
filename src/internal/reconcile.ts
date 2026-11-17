@@ -85,32 +85,39 @@ export function reconcile<Spec, Instance>(
 			ctx.ready();
 			return { spec: options.spec(), generation: generation() };
 		},
-		({ spec, generation }) => {
-			if (current && current.generation !== generation) {
-				// It went away with the old style; there is nothing to remove.
-				current = undefined;
-			}
-			if (spec === undefined) {
-				release();
-				return;
-			}
-			if (current) {
-				const { instance, spec: prev } = current;
-				const { update } = options;
-				const kept = update
-					? attempt(map, () => update(map, instance, prev, spec)) === true
-					: equal(prev, spec);
-				if (kept) {
-					current.spec = spec;
+		{
+			// A rejected async input (a failed fetch) is reported like any
+			// other MapLibre error.
+			error(error) {
+				map.fire("error", { error });
+			},
+			effect: ({ spec, generation }) => {
+				if (current && current.generation !== generation) {
+					// It went away with the old style; there is nothing to remove.
+					current = undefined;
+				}
+				if (spec === undefined) {
+					release();
 					return;
 				}
-				release();
-			}
-			const instance = attempt(map, () => options.create(map, spec));
-			if (instance === FAILED) return;
-			current = { instance, spec, generation };
-			options.instance?.(instance);
-			ctx.touch();
+				if (current) {
+					const { instance, spec: prev } = current;
+					const { update } = options;
+					const kept = update
+						? attempt(map, () => update(map, instance, prev, spec)) === true
+						: equal(prev, spec);
+					if (kept) {
+						current.spec = spec;
+						return;
+					}
+					release();
+				}
+				const instance = attempt(map, () => options.create(map, spec));
+				if (instance === FAILED) return;
+				current = { instance, spec, generation };
+				options.instance?.(instance);
+				ctx.touch();
+			},
 		},
 	);
 
