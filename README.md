@@ -5,6 +5,8 @@
 
 > **Status:** early development, not yet published to npm.
 
+**[Docs and live examples](https://benjaminlucier.github.io/maplibre-solidjs/)**
+
 - **Faithful to MapLibre.** Every `MapOptions` option, map event, source
   type, layer type, control and style property is a prop, named and typed
   as MapLibre names and types it. Nothing is renamed or wrapped in a second
