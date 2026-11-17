@@ -19,6 +19,20 @@ export {
 	MAP_OPTION_SETTERS,
 } from "./map-options.js";
 export {
+	MARKER_EVENTS,
+	MARKER_OPTION_KINDS,
+	Marker,
+	type MarkerEventProps,
+	type MarkerProps,
+} from "./marker.js";
+export {
+	POPUP_EVENTS,
+	POPUP_OPTION_KINDS,
+	Popup,
+	type PopupEventProps,
+	type PopupProps,
+} from "./popup.js";
+export {
 	SOURCE_EVENTS,
 	SOURCE_SETTERS,
 	Source,
