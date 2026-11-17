@@ -15,8 +15,7 @@
 - **Owns what it adds.** Everything a component adds is removed when it
   unmounts, and survives `setStyle`.
 - **Built for Solid 2.** The map is a pending accessor until its style loads,
-  so `<Loading>` and `isPending` work with it. Any prop can be an async
-  value.
+  so `<Loading>` waits for it. Any prop can be an async value.
 - **Checked against MapLibre's types.** Tables of options and events are
   checked at compile time to cover every key, so a MapLibre upgrade that adds
   one fails type checking here until it is handled.
@@ -147,8 +146,9 @@ MapLibre's global functions (`setWorkerUrl`, `addProtocol`,
 ### The map is pending until it is ready
 
 `useMap()` returns the enclosing map as an accessor that is pending until
-the style has loaded, and again while a new style loads. Read it in a
-tracking scope and Solid waits for it:
+the style has loaded, and again while MapLibre rebuilds the style from
+scratch (a diffed `setStyle` keeps the map usable, so it stays ready). Read
+it in a tracking scope and Solid waits for it:
 
 ```tsx
 import { Loading } from "@solidjs/web";

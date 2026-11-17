@@ -7,8 +7,9 @@ export interface MapContextValue {
 	map: MapLibreMap;
 	/**
 	 * The map once its style has loaded. Pending before that, and again while
-	 * a new style loads, so reading it holds effects and `<Loading>`
-	 * boundaries until the map accepts sources and layers.
+	 * MapLibre rebuilds the style from scratch (a diffed `setStyle` keeps the
+	 * current one usable, so it stays ready), so reading it holds effects and
+	 * `<Loading>` boundaries until the map accepts sources and layers.
 	 */
 	ready: Accessor<MapLibreMap>;
 	/**
@@ -45,7 +46,8 @@ export function useMapContext(): MapContextValue {
 /**
  * The enclosing map, once its style has loaded.
  *
- * The accessor is pending until then, and again while a new style loads.
+ * The accessor is pending until then, and again while MapLibre rebuilds the
+ * style from scratch; a diffed `setStyle` keeps the map ready throughout.
  * Read it in a tracking scope (an effect's compute function, a memo, JSX)
  * and Solid waits for it: effects run once the map is ready, and a
  * `<Loading>` boundary shows its fallback the first time. Call `useMap` in a
