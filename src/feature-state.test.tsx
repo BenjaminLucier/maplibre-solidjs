@@ -1,6 +1,6 @@
 import type { FeatureCollection } from "geojson";
 import { createSignal, Show } from "solid-js";
-import { afterEach, describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { FeatureState } from "./feature-state.js";
 import { Source } from "./source.js";
 import { type Rendered, renderMap, styleLoaded, tick } from "./test/render.js";
@@ -72,8 +72,11 @@ describe("FeatureState", () => {
 		setBuffer(128);
 		await tick();
 		expect(map.getSource("points")).not.toBe(before);
-		expect(map.getFeatureState({ source: "points", id: 1 })).toEqual({
-			hover: true,
-		});
+		// Re-applied on MapLibre's next styledata, which waits for a frame.
+		await vi.waitFor(() =>
+			expect(map.getFeatureState({ source: "points", id: 1 })).toEqual({
+				hover: true,
+			}),
+		);
 	});
 });
