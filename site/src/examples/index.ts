@@ -18,7 +18,7 @@ export const EXAMPLES: ExampleInfo[] = [
 		id: "markers",
 		title: "Markers and popups",
 		description:
-			"A draggable marker with a popup, a marker made from JSX, and an overlay.",
+			"A draggable marker with a popup, an interactive marker made from JSX, and an overlay.",
 	},
 	{
 		id: "reactive-layer",
