@@ -1,6 +1,6 @@
 {
 	"name": "maplibre-solidjs",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "SolidJS 2 components for MapLibre GL JS.",
 	"type": "module",
 	"license": "MIT OR Apache-2.0",
