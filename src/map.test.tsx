@@ -47,6 +47,29 @@ describe("Map", () => {
 		expect(container.querySelector(".maplibregl-ctrl-top-left")).not.toBeNull();
 	});
 
+	test("pans when the mouse drags it", async () => {
+		// MapLibre listens for the rest of a drag on its container's document,
+		// so the container must belong to this document when the map is built.
+		rendered = renderMap(undefined, { center: [0, 0], zoom: 3 });
+		const { map } = rendered;
+		await styleLoaded(map);
+		const canvas = map.getCanvas();
+		const box = canvas.getBoundingClientRect();
+		const at = (dx: number, buttons: number): MouseEventInit => ({
+			bubbles: true,
+			clientX: box.left + box.width / 2 + dx,
+			clientY: box.top + box.height / 2,
+			buttons,
+		});
+		canvas.dispatchEvent(new MouseEvent("mousedown", at(0, 1)));
+		for (const dx of [20, 40, 60]) {
+			document.body.dispatchEvent(new MouseEvent("mousemove", at(dx, 1)));
+			await new Promise(requestAnimationFrame);
+		}
+		document.body.dispatchEvent(new MouseEvent("mouseup", at(60, 0)));
+		await vi.waitFor(() => expect(map.getCenter().lng).toBeLessThan(0));
+	});
+
 	test("renders into an existing container", async () => {
 		const element = document.createElement("div");
 		element.style.cssText = "width: 200px; height: 100px";

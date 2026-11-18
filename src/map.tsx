@@ -89,6 +89,10 @@ export function Map(props: MapProps): JSX.Element {
 					<div id={props.id} class={props.class} style={props.containerStyle} />
 				) as HTMLDivElement)
 			: undefined;
+	// Solid clones JSX from a <template>, so until it is inserted the element
+	// belongs to the template's inert document. MapLibre listens for the rest
+	// of a drag on its container's document, which must be this one.
+	if (element) document.adoptNode(element);
 	const container = element ?? (external as HTMLElement | string);
 
 	const applied: Partial<MapOptions> = {};
