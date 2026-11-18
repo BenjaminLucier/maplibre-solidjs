@@ -82,3 +82,11 @@
 .dark .maplibregl-popup-anchor-right .maplibregl-popup-tip {
 	border-left-color: var(--color-slate-800);
 }
+
+/* Shiki tokens carry both themes' colors; pick the one for the page's theme. */
+.shiki span {
+	color: var(--shiki-light);
+}
+.dark .shiki span {
+	color: var(--shiki-dark);
+}

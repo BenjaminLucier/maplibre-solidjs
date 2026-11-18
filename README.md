@@ -51,7 +51,7 @@ setWorkerUrl(workerUrl);
 ```ts
 // vite.config.ts: the worker is an ES module.
 export default defineConfig({
-	worker: { format: "es" },
+  worker: { format: "es" },
 });
 ```
 
@@ -60,37 +60,37 @@ export default defineConfig({
 ```tsx
 import { createSignal } from "solid-js";
 import {
-	Layer,
-	Map,
-	Marker,
-	NavigationControl,
-	Popup,
-	Source,
+  Layer,
+  Map,
+  Marker,
+  NavigationControl,
+  Popup,
+  Source,
 } from "maplibre-solidjs";
 
 function App() {
-	const [zoom, setZoom] = createSignal(3);
-	return (
-		<Map
-			style="https://demotiles.maplibre.org/style.json"
-			center={[0, 20]}
-			zoom={zoom()}
-			onZoomEnd={(event) => setZoom(event.target.getZoom())}
-			containerStyle={{ width: "100%", height: "400px" }}
-		>
-			<NavigationControl position="top-right" />
-			<Source type="geojson" data="/parks.geojson">
-				<Layer
-					type="circle"
-					paint={{ "circle-radius": 6, "circle-color": "#0a7" }}
-					onClick={(event) => console.log(event.features?.[0])}
-				/>
-			</Source>
-			<Marker lngLat={[2.35, 48.85]} color="#c00">
-				<Popup>Paris</Popup>
-			</Marker>
-		</Map>
-	);
+  const [zoom, setZoom] = createSignal(3);
+  return (
+    <Map
+      style="https://demotiles.maplibre.org/style.json"
+      center={[0, 20]}
+      zoom={zoom()}
+      onZoomEnd={(event) => setZoom(event.target.getZoom())}
+      containerStyle={{ width: "100%", height: "400px" }}
+    >
+      <NavigationControl position="top-right" />
+      <Source type="geojson" data="/parks.geojson">
+        <Layer
+          type="circle"
+          paint={{ "circle-radius": 6, "circle-color": "#0a7" }}
+          onClick={(event) => console.log(event.features?.[0])}
+        />
+      </Source>
+      <Marker lngLat={[2.35, 48.85]} color="#c00">
+        <Popup>Paris</Popup>
+      </Marker>
+    </Map>
+  );
 }
 ```
 
@@ -166,15 +166,15 @@ import { Loading } from "@solidjs/web";
 import { createMapState, useMap } from "maplibre-solidjs";
 
 function Zoom() {
-	const map = useMap();
-	const zoom = createMapState(() => map().getZoom(), ["zoom"]);
-	return <output>{zoom().toFixed(1)}</output>;
+  const map = useMap();
+  const zoom = createMapState(() => map().getZoom(), ["zoom"]);
+  return <output>{zoom().toFixed(1)}</output>;
 }
 
 <Map style={style}>
-	<Loading fallback={<p>Loading map…</p>}>
-		<Zoom />
-	</Loading>
+  <Loading fallback={<p>Loading map…</p>}>
+    <Zoom />
+  </Loading>
 </Map>;
 ```
 
@@ -191,7 +191,7 @@ resolved, and reports a rejection as a map `error` event:
 const parks = createMemo(async () => (await fetch("/parks.geojson")).json());
 
 <Source type="geojson" data={parks()}>
-	<Layer type="fill" paint={{ "fill-color": "#0a7" }} />
+  <Layer type="fill" paint={{ "fill-color": "#0a7" }} />
 </Source>;
 ```
 

@@ -1,11 +1,18 @@
 import { Check, Copy } from "@lucide/solid";
-import { createSignal } from "solid-js";
+import { createMemo, createSignal, For, Show } from "solid-js";
+import { highlight, type Language } from "../highlight";
 
-/** Source code with a copy button. */
-export function CodeBlock(props: { code: string; class?: string }) {
+/** Syntax-highlighted source code with a copy button. */
+export function CodeBlock(props: {
+	code: string;
+	lang?: Language;
+	class?: string;
+}) {
 	const [copied, setCopied] = createSignal(false);
+	const code = () => props.code.trimEnd();
+	const tokens = createMemo(() => highlight(code(), props.lang ?? "tsx"));
 	const copy = async () => {
-		await navigator.clipboard.writeText(props.code);
+		await navigator.clipboard.writeText(code());
 		setCopied(true);
 		setTimeout(() => setCopied(false), 1500);
 	};
@@ -22,8 +29,25 @@ export function CodeBlock(props: { code: string; class?: string }) {
 			>
 				{copied() ? <Check size={14} /> : <Copy size={14} />}
 			</button>
-			<pre class="overflow-x-auto p-4 font-mono text-[13px] leading-6 text-slate-800 dark:text-slate-200">
-				<code>{props.code.trimEnd()}</code>
+			<pre class="shiki overflow-x-auto p-4 font-mono text-[13px] leading-6 text-slate-800 [tab-size:2] dark:text-slate-200">
+				<code>
+					<Show when={tokens()} fallback={code()}>
+						{(lines) => (
+							<For each={lines()}>
+								{(line, index) => (
+									<>
+										{index() > 0 ? "\n" : ""}
+										<For each={line}>
+											{(token) => (
+												<span style={token.htmlStyle}>{token.content}</span>
+											)}
+										</For>
+									</>
+								)}
+							</For>
+						)}
+					</Show>
+				</code>
 			</pre>
 		</div>
 	);
