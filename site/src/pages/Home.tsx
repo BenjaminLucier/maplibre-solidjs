@@ -163,7 +163,7 @@ export default function Home() {
 							Examples
 						</a>
 					</div>
-					<CodeBlock code={INSTALL} class="mt-8" />
+					<CodeBlock code={INSTALL} lang="sh" class="mt-8" />
 				</div>
 				<div class="h-[420px] overflow-hidden rounded-2xl border border-slate-200 shadow-xl dark:border-slate-800">
 					<HeroMap />

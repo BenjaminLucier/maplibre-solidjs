@@ -39,7 +39,10 @@ export default function Guide() {
 				</h1>
 
 				<h2 id="install">Install</h2>
-				<CodeBlock code="pnpm add maplibre-solidjs maplibre-gl solid-js @solidjs/web" />
+				<CodeBlock
+					code="pnpm add maplibre-solidjs maplibre-gl solid-js @solidjs/web"
+					lang="sh"
+				/>
 				<p>
 					Peer dependencies are <code>solid-js</code> 2,{" "}
 					<code>@solidjs/web</code> 2 and <code>maplibre-gl</code> 6. Import
