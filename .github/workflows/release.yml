@@ -65,9 +65,12 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  # The `release` environment only deploys from main, and npm's trusted
+  # publisher is bound to it, so no other branch or workflow can publish.
   publish:
     needs: pack
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       id-token: write
     steps:
