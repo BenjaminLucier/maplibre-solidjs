@@ -15,11 +15,17 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # On the Node in .nvmrc, and on the oldest one `engines` promises.
   check:
+    name: check (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [.nvmrc, "24"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -27,7 +33,8 @@ jobs:
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: .nvmrc
+          node-version-file: ${{ matrix.node == '.nvmrc' && '.nvmrc' || '' }}
+          node-version: ${{ matrix.node != '.nvmrc' && matrix.node || '' }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Tests run in headless Chromium: MapLibre needs WebGL.
