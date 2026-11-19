@@ -12,8 +12,8 @@ Thanks for helping out! Bug reports, ideas and pull requests are welcome.
 
 ## Building
 
-You need Node (the version in `.nvmrc`; with fnm or nvm, `fnm use`) and pnpm
-(the version in `packageManager`; `corepack enable` picks it up).
+You need Node (the version in `.node-version`; with fnm, `fnm use`) and pnpm
+(12.21.0 or newer, per `engines.pnpm`; `brew install pnpm` or `npm i -g pnpm`).
 
 ```sh
 pnpm install

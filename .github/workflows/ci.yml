@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # On the Node in .nvmrc, and on the oldest one `engines` promises.
+  # On the Node in .node-version, and on the oldest one `engines` promises.
   check:
     name: check (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
@@ -25,16 +25,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [.nvmrc, "24"]
+        node: [.node-version, "24"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          # The latest pnpm 12; package.json engines.pnpm sets the minimum.
+          version: 12
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: ${{ matrix.node == '.nvmrc' && '.nvmrc' || '' }}
-          node-version: ${{ matrix.node != '.nvmrc' && matrix.node || '' }}
+          node-version-file: ${{ matrix.node == '.node-version' && '.node-version' || '' }}
+          node-version: ${{ matrix.node != '.node-version' && matrix.node || '' }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Tests run in headless Chromium: MapLibre needs WebGL.
@@ -59,9 +62,12 @@ jobs:
         with:
           persist-credentials: false
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          # The latest pnpm 12; package.json engines.pnpm sets the minimum.
+          version: 12
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Outside the lockfile by design: an exact version, read from this
@@ -87,9 +93,12 @@ jobs:
         with:
           persist-credentials: false
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          # The latest pnpm 12; package.json engines.pnpm sets the minimum.
+          version: 12
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm site:build
