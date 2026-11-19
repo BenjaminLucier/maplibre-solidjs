@@ -93,6 +93,33 @@ describe("Marker", () => {
 		expect(marker?.getLngLat().toArray()).toEqual([5, 5]);
 	});
 
+	test("drops old classes from its children's element when re-created", async () => {
+		const [className, setClassName] = createSignal("a");
+		const [scale, setScale] = createSignal(1);
+		let marker: MapLibreMarker | undefined;
+		rendered = renderMap(() => (
+			<Marker
+				lngLat={[0, 0]}
+				className={className()}
+				scale={scale()}
+				ref={(m) => (marker = m)}
+			>
+				<b>A</b>
+			</Marker>
+		));
+		await styleLoaded(rendered.map);
+		const first = marker as MapLibreMarker;
+		// Changed together: the marker is re-created around the same element.
+		setClassName("b");
+		setScale(2);
+		await tick();
+		expect(marker).not.toBe(first);
+		const element = (marker as MapLibreMarker).getElement();
+		expect(element).toBe(first.getElement());
+		expect(element.classList.contains("b")).toBe(true);
+		expect(element.classList.contains("a")).toBe(false);
+	});
+
 	test("calls event props", async () => {
 		const onClick = vi.fn();
 		let marker: MapLibreMarker | undefined;

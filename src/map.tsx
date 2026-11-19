@@ -40,6 +40,12 @@ export type MapProps = AllowUndefined<Omit<MapOptions, "container">> &
 		 * `containerStyle`.
 		 */
 		container?: HTMLElement | string;
+		/**
+		 * The `<div>`'s id, and the name `useMapById` finds the map by inside
+		 * a `<MapProvider>`. The map is registered under its first value;
+		 * changing `id` later renames the `<div>` but not the registration, so
+		 * to reach the map by another id, render a new `<Map>` with it.
+		 */
 		id?: string;
 		class?: string;
 		/**

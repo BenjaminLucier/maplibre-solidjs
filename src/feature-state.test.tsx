@@ -3,7 +3,13 @@ import { createSignal, Show } from "solid-js";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { FeatureState } from "./feature-state.js";
 import { Source } from "./source.js";
-import { type Rendered, renderMap, styleLoaded, tick } from "./test/render.js";
+import {
+	captureDiagnostics,
+	type Rendered,
+	renderMap,
+	styleLoaded,
+	tick,
+} from "./test/render.js";
 
 let rendered: Rendered | undefined;
 afterEach(() => {
@@ -78,5 +84,25 @@ describe("FeatureState", () => {
 				hover: true,
 			}),
 		);
+	});
+
+	test("sets state inside a <Source> without Solid reporting a relay tear", async () => {
+		// A relay tear: a computation re-running because another component's
+		// effect wrote a signal it had already read in the same flush.
+		const diagnostics = captureDiagnostics();
+		rendered = renderMap(() => (
+			<Source id="points" type="geojson" data={data}>
+				<FeatureState id={1} state={{ hover: true }} />
+			</Source>
+		));
+		const { map } = rendered;
+		await styleLoaded(map);
+		await tick(50);
+		expect(map.getFeatureState({ source: "points", id: 1 })).toEqual({
+			hover: true,
+		});
+		expect(
+			diagnostics.stop().filter((d) => d.startsWith("EFFECT_RELAY_TEAR")),
+		).toEqual([]);
 	});
 });

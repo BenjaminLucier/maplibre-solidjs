@@ -5,7 +5,7 @@ import { useMapContext } from "./context.js";
 import { changedKeys, equal } from "./internal/equal.js";
 import { reconcile } from "./internal/reconcile.js";
 import { createSourceExists } from "./internal/style.js";
-import { type SourceInstance, useSourceId } from "./source.js";
+import { type SourceInstance, useEnclosingSource } from "./source.js";
 
 export interface FeatureStateProps {
 	/** The feature id (from the data, `generateId` or `promoteId`). */
@@ -37,9 +37,9 @@ interface StateSpec {
  */
 export function FeatureState(props: FeatureStateProps): JSX.Element {
 	const ctx = useMapContext();
-	const sourceId = useSourceId();
-	const source = createMemo(() => props.source ?? sourceId?.());
-	const sourceExists = createSourceExists(ctx, source);
+	const enclosing = useEnclosingSource();
+	const source = createMemo(() => props.source ?? enclosing?.id());
+	const sourceExists = createSourceExists(ctx, source, enclosing);
 
 	reconcile<StateSpec, SourceInstance>(ctx, {
 		spec() {
