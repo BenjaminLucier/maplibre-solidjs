@@ -223,4 +223,73 @@ describe("Popup", () => {
 		await tick();
 		expect(onClose).toHaveBeenCalledOnce();
 	});
+
+	test("re-creating it calls neither onClose nor onOpen, as on mount", async () => {
+		const onOpen = vi.fn();
+		const onClose = vi.fn();
+		const [anchor, setAnchor] = createSignal<"top" | "bottom">("top");
+		let popup: MapLibrePopup | undefined;
+		rendered = renderMap(() => (
+			<Popup
+				lngLat={[0, 0]}
+				text="x"
+				anchor={anchor()}
+				onOpen={onOpen}
+				onClose={onClose}
+				ref={(p) => (popup = p)}
+			/>
+		));
+		const { map } = rendered;
+		await styleLoaded(map);
+		await tick();
+		const first = popup as MapLibrePopup;
+		expect(onOpen).not.toHaveBeenCalled();
+		setAnchor("bottom");
+		await tick();
+		expect(popup).not.toBe(first);
+		expect(popup?.isOpen()).toBe(true);
+		expect(onClose).not.toHaveBeenCalled();
+		expect(onOpen).not.toHaveBeenCalled();
+		// The new popup's events still arrive.
+		popup?.remove();
+		expect(onClose).toHaveBeenCalledOnce();
+	});
+
+	test("stays open inside a marker when re-created, without events", async () => {
+		const onOpen = vi.fn();
+		const onClose = vi.fn();
+		const [anchor, setAnchor] = createSignal<"top" | "bottom">("top");
+		let marker: MapLibreMarker | undefined;
+		let popup: MapLibrePopup | undefined;
+		rendered = renderMap(() => (
+			<Marker lngLat={[0, 0]} ref={(m) => (marker = m)}>
+				<Popup
+					anchor={anchor()}
+					onOpen={onOpen}
+					onClose={onClose}
+					ref={(p) => (popup = p)}
+				/>
+			</Marker>
+		));
+		const { map } = rendered;
+		await styleLoaded(map);
+		await tick();
+		marker?.togglePopup();
+		expect(onOpen).toHaveBeenCalledOnce();
+		const first = popup as MapLibrePopup;
+		setAnchor("bottom");
+		await tick();
+		expect(popup).not.toBe(first);
+		expect(marker?.getPopup()).toBe(popup);
+		expect(popup?.isOpen()).toBe(true);
+		expect(onClose).not.toHaveBeenCalled();
+		expect(onOpen).toHaveBeenCalledOnce();
+		// Closed when re-created, it stays closed.
+		marker?.togglePopup();
+		expect(onClose).toHaveBeenCalledOnce();
+		setAnchor("top");
+		await tick();
+		expect(popup?.isOpen()).toBe(false);
+		expect(onOpen).toHaveBeenCalledOnce();
+	});
 });

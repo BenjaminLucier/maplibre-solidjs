@@ -76,7 +76,12 @@ export function reconcile<Spec, Instance>(
 		current = undefined;
 		// No signal writes while the owner is being disposed.
 		if (!disposing) options.instance?.(undefined);
-		attempt(map, () => options.destroy(map, instance, spec));
+		releasing.add(instance);
+		try {
+			attempt(map, () => options.destroy(map, instance, spec));
+		} finally {
+			releasing.delete(instance);
+		}
 	};
 
 	createEffect(
@@ -123,6 +128,19 @@ export function reconcile<Spec, Instance>(
 	);
 
 	onCleanup(() => release(true));
+}
+
+/** Instances whose `destroy` is running. */
+const releasing = new Set<unknown>();
+
+/**
+ * Whether `target` is being taken off the map by `reconcile`. Events it
+ * fires meanwhile (a popup's `close` from `popup.remove()`) come from the
+ * component's own lifecycle, not from the user or the map, so event props
+ * don't receive them, the same as events fired while it is created.
+ */
+export function isReleasing(target: unknown): boolean {
+	return releasing.has(target);
 }
 
 const FAILED: unique symbol = Symbol("failed");

@@ -91,7 +91,9 @@ const INIT_KEYS = [
  *
  * On its own, the popup opens at `lngLat` when mounted. Closing it from the
  * map (close button, `closeOnClick`) fires `onClose`; unmount it there to
- * keep your state in step. Inside a `<Marker>`, it is the marker's popup
+ * keep your state in step. Re-creating it (an option without a setter
+ * changed) fires neither `onClose` nor `onOpen`, the same as mounting and
+ * unmounting it. Inside a `<Marker>`, it is the marker's popup
  * (`marker.setPopup`) and opens when the marker is clicked.
  */
 export function Popup(props: PopupProps): JSX.Element {
@@ -101,6 +103,8 @@ export function Popup(props: PopupProps): JSX.Element {
 		equals: false,
 	});
 	const content = createContent(() => props.children);
+	// A marker's popup open when it is re-created opens again on the marker.
+	let reopen = false;
 
 	reconcile<PopupSpec, MapLibrePopup>(ctx, {
 		spec() {
@@ -133,6 +137,8 @@ export function Popup(props: PopupProps): JSX.Element {
 			setContent(popup, content);
 			if (marker) {
 				marker.setPopup(popup);
+				if (reopen && !popup.isOpen()) marker.togglePopup();
+				reopen = false;
 				return popup;
 			}
 			if (trackPointer) popup.trackPointer();
@@ -165,6 +171,7 @@ export function Popup(props: PopupProps): JSX.Element {
 			return true;
 		},
 		destroy(_map, popup, { marker }) {
+			reopen = popup.isOpen();
 			if (marker?.getPopup() === popup) marker.setPopup(null);
 			popup.remove();
 		},
