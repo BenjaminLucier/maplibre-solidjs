@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/BenjaminLucier/maplibre-solidjs/compare/v0.1.0...v0.2.0) (2026-11-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* require maplibre-gl 6.16 and restore world copies on prop removal ([#10](https://github.com/BenjaminLucier/maplibre-solidjs/issues/10))
+
+### Bug Fixes
+
+* **popup:** don't call onClose when a popup is re-created ([#15](https://github.com/BenjaminLucier/maplibre-solidjs/issues/15)) ([e7a4a95](https://github.com/BenjaminLucier/maplibre-solidjs/commit/e7a4a954d9f49ff01a9f8c40c03b88d59309cc97))
+* **popup:** hide a popup left with neither trackPointer nor lngLat ([#14](https://github.com/BenjaminLucier/maplibre-solidjs/issues/14)) ([d5ca2bc](https://github.com/BenjaminLucier/maplibre-solidjs/commit/d5ca2bc0ea0953ec0bc66bf5f71a9fbb23e52654))
+* require maplibre-gl 6.16 and restore world copies on prop removal ([#10](https://github.com/BenjaminLucier/maplibre-solidjs/issues/10)) ([c55fdd1](https://github.com/BenjaminLucier/maplibre-solidjs/commit/c55fdd15ac1b5a51825f090f55ab56dad1ad46d9))
+* stale marker classes and FeatureState re-runs inside a Source ([#11](https://github.com/BenjaminLucier/maplibre-solidjs/issues/11)) ([d791b59](https://github.com/BenjaminLucier/maplibre-solidjs/commit/d791b599c5bb09d03b43c8d925883a1868f23909))
+
 ## 0.1.0 (2026-11-18)
 
 
