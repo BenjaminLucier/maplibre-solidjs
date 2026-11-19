@@ -22,9 +22,9 @@
 		"gis"
 	],
 	"sideEffects": false,
-	"packageManager": "pnpm@12.21.0",
 	"engines": {
-		"node": ">=24"
+		"node": ">=24",
+		"pnpm": ">=12.21.0"
 	},
 	"files": [
 		"dist",
