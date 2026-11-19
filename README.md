@@ -209,7 +209,9 @@ const parks = createMemo(async () => (await fetch("/parks.geojson")).json());
   a listener that lives as long as its owner. `layer` may be an accessor.
 - `<MapProvider>` and `useMapById(id)`: reach a `<Map id>` from outside it,
   for a toolbar beside the map or a second map that follows the first. The
-  accessor is pending until that map has mounted and loaded.
+  accessor is pending until that map has mounted and loaded. A map is
+  registered under the `id` it was created with; changing `id` afterwards
+  doesn't re-register it.
 
 ## Contributing
 

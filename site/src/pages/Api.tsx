@@ -20,7 +20,8 @@ const GROUPS: { title: string; entries: Entry[] }[] = [
 			{
 				name: "<MapProvider>",
 				maplibre: "–",
-				notes: "Makes each <Map id> inside it reachable with useMapById.",
+				notes:
+					"Makes each <Map id> inside it reachable with useMapById, under the id the map was created with.",
 			},
 		],
 	},

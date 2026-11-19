@@ -293,7 +293,9 @@ function Zoom() {
 					<li>
 						<code>&lt;MapProvider&gt;</code> and <code>useMapById(id)</code>:
 						reach a <code>&lt;Map id&gt;</code> from outside it, pending until
-						that map has mounted and loaded.
+						that map has mounted and loaded. A map is registered under the{" "}
+						<code>id</code> it was created with; changing <code>id</code>{" "}
+						afterwards doesn't re-register it.
 					</li>
 				</ul>
 
