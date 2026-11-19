@@ -178,6 +178,100 @@ describe("Popup", () => {
 		expect(first.getMaxWidth()).toBe("300px");
 	});
 
+	test("switches trackPointer on and off, and back to lngLat", async () => {
+		const [trackPointer, setTrackPointer] = createSignal<boolean | undefined>(
+			true,
+		);
+		const [lngLat, setLngLat] = createSignal<[number, number] | undefined>([
+			0, 0,
+		]);
+		let popup: MapLibrePopup | undefined;
+		rendered = renderMap(() => (
+			<Popup
+				trackPointer={trackPointer()}
+				lngLat={lngLat()}
+				text="x"
+				ref={(p) => (popup = p)}
+			/>
+		));
+		const { map } = rendered;
+		await styleLoaded(map);
+		const first = popup as MapLibrePopup;
+		const tracking = () => ({
+			popup: first
+				.getElement()
+				.classList.contains("maplibregl-popup-track-pointer"),
+			map: map
+				.getCanvasContainer()
+				.classList.contains("maplibregl-track-pointer"),
+		});
+		expect(tracking()).toEqual({ popup: true, map: true });
+
+		// It follows the pointer, not lngLat.
+		const canvas = map.getCanvas();
+		const box = canvas.getBoundingClientRect();
+		canvas.dispatchEvent(
+			new MouseEvent("mousemove", {
+				bubbles: true,
+				clientX: box.left + 50,
+				clientY: box.top + 60,
+			}),
+		);
+		expect(first._pos?.x).toBe(50);
+		expect(first._pos?.y).toBe(60);
+
+		// A new lngLat leaves it tracking.
+		setLngLat([3, 4]);
+		await tick();
+		expect(tracking()).toEqual({ popup: true, map: true });
+
+		// Off: back at lngLat.
+		setTrackPointer(false);
+		await tick();
+		expect(popup).toBe(first);
+		expect(tracking()).toEqual({ popup: false, map: false });
+		expect(first.getLngLat().toArray()).toEqual([3, 4]);
+
+		// Removing the prop is the same as false; on again tracks again.
+		setTrackPointer(true);
+		await tick();
+		expect(tracking()).toEqual({ popup: true, map: true });
+		setTrackPointer(undefined);
+		await tick();
+		expect(tracking()).toEqual({ popup: false, map: false });
+		expect(first.getLngLat().toArray()).toEqual([3, 4]);
+
+		// lngLat changes apply while it isn't tracking.
+		setLngLat([5, 6]);
+		await tick();
+		expect(first.getLngLat().toArray()).toEqual([5, 6]);
+		expect(popup).toBe(first);
+	});
+
+	test("starts at lngLat and switches to trackPointer", async () => {
+		const [trackPointer, setTrackPointer] = createSignal(false);
+		let popup: MapLibrePopup | undefined;
+		rendered = renderMap(() => (
+			<Popup
+				trackPointer={trackPointer()}
+				lngLat={[1, 2]}
+				text="x"
+				ref={(p) => (popup = p)}
+			/>
+		));
+		const { map, host } = rendered;
+		await styleLoaded(map);
+		const first = popup as MapLibrePopup;
+		expect(first.getLngLat().toArray()).toEqual([1, 2]);
+		expect(host.querySelector(".maplibregl-popup-track-pointer")).toBeNull();
+		setTrackPointer(true);
+		await tick();
+		expect(popup).toBe(first);
+		expect(
+			host.querySelector(".maplibregl-popup-track-pointer"),
+		).not.toBeNull();
+	});
+
 	test("calls onClose when closed from the map, not when unmounted", async () => {
 		const onClose = vi.fn();
 		const [shown, setShown] = createSignal(true);
