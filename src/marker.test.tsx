@@ -272,6 +272,45 @@ describe("Popup", () => {
 		).not.toBeNull();
 	});
 
+	test("stops tracking with no lngLat to go to, and shows again at a new lngLat", async () => {
+		const [trackPointer, setTrackPointer] = createSignal(true);
+		const [lngLat, setLngLat] = createSignal<[number, number] | undefined>();
+		let popup: MapLibrePopup | undefined;
+		rendered = renderMap(() => (
+			<Popup
+				trackPointer={trackPointer()}
+				lngLat={lngLat()}
+				text="x"
+				ref={(p) => (popup = p)}
+			/>
+		));
+		const { map, host } = rendered;
+		await styleLoaded(map);
+		const tracking = () =>
+			map.getCanvasContainer().classList.contains("maplibregl-track-pointer");
+		expect(tracking()).toBe(true);
+		expect(host.querySelector(".maplibregl-popup")).not.toBeNull();
+
+		// Nowhere to go: unplaced, like a popup with neither prop.
+		setTrackPointer(false);
+		await tick();
+		expect(tracking()).toBe(false);
+		expect(host.querySelector(".maplibregl-popup")).toBeNull();
+
+		const unplaced = popup as MapLibrePopup;
+		setLngLat([1, 2]);
+		await tick();
+		expect(popup).toBe(unplaced);
+		expect(unplaced.getLngLat().toArray()).toEqual([1, 2]);
+		expect(host.querySelector(".maplibregl-popup")).not.toBeNull();
+
+		// Removing lngLat while not tracking unplaces it too.
+		setLngLat(undefined);
+		await tick();
+		expect(host.querySelector(".maplibregl-popup")).toBeNull();
+		expect(tracking()).toBe(false);
+	});
+
 	test("calls onClose when closed from the map, not when unmounted", async () => {
 		const onClose = vi.fn();
 		const [shown, setShown] = createSignal(true);

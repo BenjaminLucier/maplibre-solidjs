@@ -54,7 +54,11 @@ export type PopupProps = AllowUndefined<PopupOptions> &
 		 * its popup itself.
 		 */
 		lngLat?: LngLatLike | undefined;
-		/** Follow the mouse pointer instead of `lngLat` (`popup.trackPointer()`). */
+		/**
+		 * Follow the mouse pointer instead of `lngLat` (`popup.trackPointer()`).
+		 * Switched off, the popup goes back to `lngLat`, or without one is
+		 * hidden until it gets one.
+		 */
 		trackPointer?: boolean | undefined;
 		/** Plain-text content (`setText`), when there are no children. */
 		text?: string | undefined;
@@ -145,6 +149,16 @@ export function Popup(props: PopupProps): JSX.Element {
 			if (INIT_KEYS.some((key) => !equal(p[key], n[key]))) return false;
 			const changed = (key: string) => !equal(p[key], n[key]);
 			if (!next.marker) {
+				// Losing its position (trackPointer off or lngLat removed, with
+				// neither left) has no setter: MapLibre only stops tracking by
+				// moving to a lngLat. Re-create it, unplaced, as it would be
+				// constructed without either.
+				if (
+					!next.trackPointer &&
+					!next.lngLat &&
+					(changed("trackPointer") || changed("lngLat"))
+				)
+					return false;
 				if (next.trackPointer && changed("trackPointer")) popup.trackPointer();
 				else if (
 					!next.trackPointer &&
