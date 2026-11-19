@@ -6,9 +6,6 @@
 [![npm](https://img.shields.io/npm/v/maplibre-solidjs)](https://www.npmjs.com/package/maplibre-solidjs)
 [![CI](https://github.com/BenjaminLucier/maplibre-solidjs/actions/workflows/ci.yml/badge.svg)](https://github.com/BenjaminLucier/maplibre-solidjs/actions/workflows/ci.yml)
 
-> **Status:** early (0.x). The API follows MapLibre's and may still change
-> between minor versions.
-
 **[Docs and live examples](https://benjaminlucier.github.io/maplibre-solidjs/)**
 
 - **Faithful to MapLibre.** Every `MapOptions` option, map event, source
