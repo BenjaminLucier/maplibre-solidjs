@@ -45,8 +45,8 @@ export default function Guide() {
 				/>
 				<p>
 					Peer dependencies are <code>solid-js</code> 2,{" "}
-					<code>@solidjs/web</code> 2 and <code>maplibre-gl</code> 6. Import
-					MapLibre's stylesheet once:
+					<code>@solidjs/web</code> 2 and <code>maplibre-gl</code> 6.16 or
+					later. Import MapLibre's stylesheet once:
 				</p>
 				<CodeBlock code={`import "maplibre-gl/dist/maplibre-gl.css";`} />
 				<p>

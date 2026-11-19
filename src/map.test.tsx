@@ -102,7 +102,9 @@ describe("Map", () => {
 
 	test("applies changed setter options", async () => {
 		const [maxZoom, setMaxZoom] = createSignal<number | undefined>(12);
-		const [renderWorldCopies, setRenderWorldCopies] = createSignal(true);
+		const [renderWorldCopies, setRenderWorldCopies] = createSignal<
+			boolean | undefined
+		>(true);
 		rendered = renderMap(undefined, {
 			get maxZoom() {
 				return maxZoom();
@@ -118,8 +120,11 @@ describe("Map", () => {
 		expect(map.getMaxZoom()).toBe(8);
 		expect(map.getRenderWorldCopies()).toBe(false);
 		setMaxZoom(undefined);
+		// MapLibre reads null as false here, not as its default of true.
+		setRenderWorldCopies(undefined);
 		await tick();
 		expect(map.getMaxZoom()).toBe(22);
+		expect(map.getRenderWorldCopies()).toBe(true);
 	});
 
 	test("enables and disables interaction handlers", async () => {

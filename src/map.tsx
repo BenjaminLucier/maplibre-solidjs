@@ -301,11 +301,16 @@ function applyOptions(
 	);
 }
 
-/** MapLibre's defaults, for setter props that are removed. */
+/**
+ * MapLibre's defaults, for setter props that are removed, where passing
+ * `null` to the setter doesn't already restore them.
+ */
 const SETTER_DEFAULTS: Record<string, (() => unknown) | undefined> = {
 	zoomSnap: () => 0,
 	pixelRatio: () => devicePixelRatio,
 	centerClampedToGround: () => true,
+	// setRenderWorldCopies(null) turns world copies off.
+	renderWorldCopies: () => true,
 };
 
 const EPSILON = 1e-9;
