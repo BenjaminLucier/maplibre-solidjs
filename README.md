@@ -116,8 +116,7 @@ function App() {
 | `padding`, `verticalFieldOfView`, `missingStyleImageResolver`, debug flags (`showTileBoundaries`, `showCollisionBoxes`, `repaint`, ...) | their setters and properties |
 | Everything else (`hash`, `canvasContextAttributes`, `attributionControl`, ...) | construction only, as with MapLibre |
 
-`MAP_OPTION_KINDS`, `MAP_OPTION_SETTERS` and `MAP_PROPERTIES` are exported
-if you need the exact tables.
+The exact tables are exported; see [Exported tables](#exported-tables).
 
 ### Events
 
@@ -148,6 +147,10 @@ inside the handler.
 | `Control` | `addControl` for any `IControl` |
 | `NavigationControl`, `GeolocateControl`, `ScaleControl`, `FullscreenControl`, `AttributionControl`, `LogoControl`, `TerrainControl`, `GlobeControl` | the built-in controls, at `position` |
 
+`<Popup html>` is passed to MapLibre's `setHTML` as it is, without
+sanitising. Sanitise untrusted content first, or use `text` or children,
+which are inserted as text and DOM nodes.
+
 Layers, `Terrain` and `TerrainControl` inside a `<Source>` use it without a
 `source` prop, and wait for a source named by id. A `<Layer beforeId>` whose
 layer isn't on the map yet goes on top, and moves into place once it is.
@@ -155,6 +158,36 @@ layer isn't on the map yet goes on top, and moves into place once it is.
 MapLibre's global functions (`setWorkerUrl`, `addProtocol`,
 `setRTLTextPlugin`, `prewarm`, ...) don't need a component: import them from
 `maplibre-gl`.
+
+### Exported tables
+
+Each table is checked against MapLibre's types to cover every key, and says
+how a component applies its props.
+
+| Table | What it holds |
+| --- | --- |
+| `MAP_OPTION_KINDS` | How `<Map>` applies each `MapOptions` option after construction: `setter`, `handler`, `camera`, `bounds`, `style`, `globalState` or `init` |
+| `MAP_OPTION_SETTERS` | The `Map` method each `setter` option goes through |
+| `MAP_HANDLER_DEFAULTS` | The interaction handlers, enabled or disabled by default as in MapLibre; a removed handler prop goes back to this |
+| `MAP_CAMERA_OPTIONS` | The camera props applied together with `jumpTo` |
+| `MAP_PROPERTIES` | How the props outside `MapOptions` (`padding`, debug flags, ...) reach the map |
+| `MAP_EVENTS` | `<Map>` event props and the map events they listen to |
+| `LAYER_EVENTS` | `<Layer>` event props and the layer events they listen to |
+| `SOURCE_EVENTS` | `<Source>` event props: `onData`, `onDataLoading`, `onDataAbort`, `onError` |
+| `SOURCE_SETTERS` | The properties of each source type MapLibre can change in place; any other change re-creates the source |
+| `MARKER_EVENTS` | `<Marker>` event props: `onDragStart`, `onDrag`, `onDragEnd`, `onClick` |
+| `MARKER_OPTION_KINDS` | How `<Marker>` applies each `MarkerOptions` option: `setter`, or `init` to re-create the marker |
+| `POPUP_EVENTS` | `<Popup>` event props: `onOpen`, `onClose` |
+| `POPUP_OPTION_KINDS` | How `<Popup>` applies each `PopupOptions` option: `setter`, or `init` to re-create the popup |
+| `GEOLOCATE_CONTROL_EVENTS` | `<GeolocateControl>` event props: `onGeolocate`, `onError`, `onOutOfMaxBounds`, `onTrackUserLocationStart`, `onTrackUserLocationEnd`, `onUserLocationFocus`, `onUserLocationLostFocus` |
+| `FULLSCREEN_CONTROL_EVENTS` | `<FullscreenControl>` event props: `onFullscreenStart`, `onFullscreenEnd` |
+
+### Server rendering
+
+MapLibre needs a browser, so on the server `<Map>` renders an empty
+`<div>` with its `id`, `class` and `containerStyle`, and doesn't render its
+children: the map, and the sources, layers, markers and the rest inside
+it, exist only in the browser.
 
 ## Solid 2
 

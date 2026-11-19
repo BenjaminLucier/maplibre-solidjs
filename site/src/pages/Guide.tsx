@@ -13,6 +13,7 @@ const SECTIONS = [
 	["async", "Async props"],
 	["primitives", "Primitives"],
 	["globals", "Global functions"],
+	["server", "Server rendering"],
 ] as const;
 
 export default function Guide() {
@@ -231,6 +232,12 @@ export function App() {
   <Layer type="circle" filter={["!", ["has", "point_count"]]} paint={{ "circle-radius": 5 }} />
 </Source>`}
 				/>
+				<p>
+					A <code>&lt;Popup&gt;</code>'s <code>html</code> goes to MapLibre's{" "}
+					<code>setHTML</code> as it is, without sanitising. Sanitise untrusted
+					content first, or use <code>text</code> or children, which are
+					inserted as text and DOM nodes.
+				</p>
 
 				<h2 id="pending">The map is pending until ready</h2>
 				<p>
@@ -303,6 +310,15 @@ function Zoom() {
 					<code>addProtocol</code>, <code>setRTLTextPlugin</code>,{" "}
 					<code>prewarm</code>, …) don't need a component: import them from{" "}
 					<code>maplibre-gl</code> and call them before rendering a map.
+				</p>
+
+				<h2 id="server">Server rendering</h2>
+				<p>
+					MapLibre needs a browser, so on the server <code>&lt;Map&gt;</code>{" "}
+					renders an empty <code>&lt;div&gt;</code> with its <code>id</code>,{" "}
+					<code>class</code> and <code>containerStyle</code>, and doesn't render
+					its children: the map, and the sources, layers, markers and the rest
+					inside it, exist only in the browser.
 				</p>
 			</article>
 		</div>
