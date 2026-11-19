@@ -140,8 +140,16 @@ export function Marker(props: MarkerProps): JSX.Element {
 				swapClasses(marker, prev.className, next.className);
 			return true;
 		},
-		destroy(_map, marker) {
+		destroy(_map, marker, { element, className }) {
 			marker.remove();
+			// MapLibre adds className to the element and never takes it off. The
+			// children's element outlives the marker, so a marker re-created
+			// around it would keep the old classes. An `element` prop is the
+			// caller's, and its classes are theirs to manage.
+			if (element !== content.element) return;
+			for (const name of className?.split(/\s+/).filter(Boolean) ?? []) {
+				element.classList.remove(name);
+			}
 		},
 		instance(marker) {
 			setMarker(() => marker);
