@@ -5,6 +5,7 @@ import {
 	onCleanup,
 	untrack,
 } from "solid-js";
+import { isReleasing } from "./reconcile.js";
 
 /** Maps a component's `on*` prop names to the event types MapLibre fires. */
 export type EventTable = Readonly<Record<string, string>>;
@@ -38,7 +39,8 @@ interface Evented {
 /**
  * Subscribes `target` to the events whose handler props are set. A listener
  * calls the current prop when its event fires, so swapping a handler doesn't
- * resubscribe; adding or removing one does. With `layer`, events are scoped
+ * resubscribe; adding or removing one does. Events `target` fires while
+ * `reconcile` takes it off the map are dropped. With `layer`, events are scoped
  * to that layer (`map.on(type, layerId, listener)`).
  *
  * With `immediate`, the handlers present now are subscribed synchronously
@@ -83,6 +85,7 @@ export function bindEvents(
 			if (bound.has(prop)) continue;
 			const type = table[prop] as string;
 			const listener = (event: unknown) => {
+				if (isReleasing(target)) return;
 				const handler = (props as Record<string, unknown>)[prop];
 				if (typeof handler === "function") handler(event);
 			};
