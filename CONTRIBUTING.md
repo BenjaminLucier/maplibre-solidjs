@@ -23,6 +23,10 @@ pnpm build        # dist/ (ESM and type declarations)
 pnpm site:dev     # the docs site, against the library's source
 ```
 
+Tests run in headless Chromium, since MapLibre needs WebGL and real layout,
+except `*.server.test.tsx`, which run in Node with Solid's server build to
+check what renders on the server.
+
 The docs and demo site lives in `site/`, a private workspace package that
 imports the library from `src/` directly. Its examples are real files in
 `site/src/examples/`: the site runs each one and shows its source. It is

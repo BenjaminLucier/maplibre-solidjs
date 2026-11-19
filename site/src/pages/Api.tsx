@@ -15,7 +15,7 @@ const GROUPS: { title: string; entries: Entry[] }[] = [
 				name: "<Map>",
 				maplibre: "new Map(options)",
 				notes:
-					"Every MapOptions option and map event as props, plus padding, verticalFieldOfView, missingStyleImageResolver and the debug flags. containerStyle, class and id style its <div>.",
+					"Every MapOptions option and map event as props, plus padding, verticalFieldOfView, missingStyleImageResolver and the debug flags. containerStyle, class and id style its <div>. On the server, renders that <div> empty, without its children.",
 			},
 			{
 				name: "<MapProvider>",
@@ -91,7 +91,7 @@ const GROUPS: { title: string; entries: Entry[] }[] = [
 				name: "<Popup>",
 				maplibre: "Popup",
 				notes:
-					"Standalone at lngLat or trackPointer, or inside a <Marker>. Children, html or text as content. Events: onOpen, onClose.",
+					"Standalone at lngLat or trackPointer, or inside a <Marker>. Children, html or text as content; html goes to setHTML unsanitised, so sanitise untrusted content or use text or children. Events: onOpen, onClose.",
 			},
 		],
 	},
@@ -168,6 +168,88 @@ const GROUPS: { title: string; entries: Entry[] }[] = [
 			},
 		],
 	},
+	{
+		title: "Exported tables",
+		entries: [
+			{
+				name: "MAP_OPTION_KINDS",
+				maplibre: "MapOptions",
+				notes:
+					"How <Map> applies each option after construction: setter, handler, camera, bounds, style, globalState or init.",
+			},
+			{
+				name: "MAP_OPTION_SETTERS",
+				maplibre: "Map setters",
+				notes: "The Map method each setter option goes through.",
+			},
+			{
+				name: "MAP_HANDLER_DEFAULTS",
+				maplibre: "Map handlers",
+				notes:
+					"Each interaction handler, enabled or disabled by default as in MapLibre. A removed handler prop goes back to this.",
+			},
+			{
+				name: "MAP_CAMERA_OPTIONS",
+				maplibre: "jumpTo",
+				notes: "The camera props, applied together with jumpTo.",
+			},
+			{
+				name: "MAP_PROPERTIES",
+				maplibre: "Map setters, properties",
+				notes:
+					"How the props outside MapOptions (padding, debug flags, …) reach the map.",
+			},
+			{
+				name: "MAP_EVENTS, LAYER_EVENTS",
+				maplibre: "MapEventType, MapLayerEventType",
+				notes: "<Map> and <Layer> event props and the events they listen to.",
+			},
+			{
+				name: "SOURCE_EVENTS",
+				maplibre: "Source events",
+				notes: "onData, onDataLoading, onDataAbort, onError.",
+			},
+			{
+				name: "SOURCE_SETTERS",
+				maplibre: "Source setters",
+				notes:
+					"The properties of each source type that change in place. Any other change re-creates the source.",
+			},
+			{
+				name: "MARKER_EVENTS",
+				maplibre: "Marker events",
+				notes: "onDragStart, onDrag, onDragEnd, onClick.",
+			},
+			{
+				name: "MARKER_OPTION_KINDS",
+				maplibre: "MarkerOptions",
+				notes:
+					"How <Marker> applies each option: setter, or init to re-create the marker.",
+			},
+			{
+				name: "POPUP_EVENTS",
+				maplibre: "PopupEventType",
+				notes: "onOpen, onClose.",
+			},
+			{
+				name: "POPUP_OPTION_KINDS",
+				maplibre: "PopupOptions",
+				notes:
+					"How <Popup> applies each option: setter, or init to re-create the popup.",
+			},
+			{
+				name: "GEOLOCATE_CONTROL_EVENTS",
+				maplibre: "GeolocateControlEventType",
+				notes:
+					"onGeolocate, onError, onOutOfMaxBounds, onTrackUserLocationStart, onTrackUserLocationEnd, onUserLocationFocus, onUserLocationLostFocus.",
+			},
+			{
+				name: "FULLSCREEN_CONTROL_EVENTS",
+				maplibre: "FullscreenControlEventType",
+				notes: "onFullscreenStart, onFullscreenEnd.",
+			},
+		],
+	},
 ];
 
 export default function Api() {
@@ -179,10 +261,8 @@ export default function Api() {
 			</h1>
 			<p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-400">
 				Prop types come from <code>maplibre-gl</code>, so your editor shows the
-				full list for each component. The exported tables (
-				<code>MAP_OPTION_KINDS</code>, <code>MAP_EVENTS</code>,{" "}
-				<code>LAYER_EVENTS</code>, <code>SOURCE_SETTERS</code>, …) say exactly
-				how each prop is applied.
+				full list for each component. The exported tables, listed at the end,
+				say exactly how each prop is applied.
 			</p>
 			<For each={GROUPS}>
 				{(group) => (

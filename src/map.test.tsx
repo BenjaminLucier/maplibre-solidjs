@@ -3,7 +3,8 @@ import { Map as MapLibreMap } from "maplibre-gl";
 import { createEffect, createSignal } from "solid-js";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { useMap } from "./context.js";
-import { Map } from "./map.js";
+import { Map, type MapProps } from "./map.js";
+import type { MAP_OPTION_SETTERS } from "./map-options.js";
 import {
 	EMPTY_STYLE,
 	type Rendered,
@@ -11,6 +12,75 @@ import {
 	styleLoaded,
 	tick,
 } from "./test/render.js";
+
+interface SetterCase {
+	/** A value that differs from MapLibre's default. */
+	value: unknown;
+	/** What the option looks like on a map, through its getter or its effect. */
+	read(map: MapLibreMap): unknown;
+}
+
+/** Reads `zoom` back after asking for zoom 5, to see what the camera allowed. */
+const zoomAfterJump = (map: MapLibreMap) => {
+	map.jumpTo({ zoom: 5 });
+	return map.getZoom();
+};
+
+/**
+ * One case per setter option. `satisfies` makes it exhaustive, so a new
+ * setter fails type checking until it has a case here.
+ */
+const SETTER_CASES = {
+	zoomSnap: { value: 0.5, read: (map) => map.getZoomSnap() },
+	maxBounds: {
+		value: [
+			[-10, -10],
+			[10, 10],
+		],
+		read: (map) => map.getMaxBounds()?.toArray() ?? null,
+	},
+	minZoom: { value: 3, read: (map) => map.getMinZoom() },
+	maxZoom: { value: 8, read: (map) => map.getMaxZoom() },
+	minPitch: { value: 10, read: (map) => map.getMinPitch() },
+	maxPitch: { value: 40, read: (map) => map.getMaxPitch() },
+	anisotropicFilterPitch: {
+		value: 5,
+		read: (map) => map.getAnisotropicFilterPitch(),
+	},
+	renderWorldCopies: {
+		value: false,
+		read: (map) => map.getRenderWorldCopies(),
+	},
+	// No getter: ask the request manager what it does with a URL.
+	transformRequest: {
+		value: (url: string) => ({ url: `${url}?transformed` }),
+		read: (map) =>
+			(
+				map as unknown as {
+					_requestManager: {
+						transformRequest(url: string, type: string): unknown;
+					};
+				}
+			)._requestManager.transformRequest("https://example.com/", "Unknown"),
+	},
+	// No getter: see whether the camera still gets the zoom it asks for.
+	transformCameraUpdate: {
+		value: () => ({ zoom: 1 }),
+		read: zoomAfterJump,
+	},
+	transformConstrain: {
+		value: (center: unknown) => ({ center, zoom: 2 }),
+		read: zoomAfterJump,
+	},
+	pixelRatio: {
+		value: devicePixelRatio + 1,
+		read: (map) => map.getPixelRatio(),
+	},
+	centerClampedToGround: {
+		value: false,
+		read: (map) => map.getCenterClampedToGround(),
+	},
+} satisfies Record<keyof typeof MAP_OPTION_SETTERS, SetterCase>;
 
 let rendered: Rendered | undefined;
 afterEach(() => {
@@ -126,6 +196,37 @@ describe("Map", () => {
 		expect(map.getMaxZoom()).toBe(22);
 		expect(map.getRenderWorldCopies()).toBe(true);
 	});
+
+	test.each(
+		Object.entries(SETTER_CASES) as [
+			keyof typeof MAP_OPTION_SETTERS,
+			SetterCase,
+		][],
+	)(
+		"restores MapLibre's default when %s is removed",
+		async (key, setterCase) => {
+			const fresh = renderMap();
+			const expected = setterCase.read(fresh.map);
+			fresh.dispose();
+			// Boxed: createSignal reads a function as a derivation, not a value.
+			const [value, setValue] = createSignal<{ value: unknown }>({
+				value: setterCase.value,
+			});
+			const props: Record<string, unknown> = {};
+			Object.defineProperty(props, key, {
+				get: () => value().value,
+				enumerable: true,
+			});
+			rendered = renderMap(undefined, props as Partial<MapProps>);
+			const { map } = rendered;
+			await styleLoaded(map);
+			// The value must make a difference, or this test proves nothing.
+			expect(setterCase.read(map)).not.toEqual(expected);
+			setValue({ value: undefined });
+			await tick();
+			expect(setterCase.read(map)).toEqual(expected);
+		},
+	);
 
 	test("enables and disables interaction handlers", async () => {
 		const [dragPan, setDragPan] = createSignal<boolean | undefined>(true);
