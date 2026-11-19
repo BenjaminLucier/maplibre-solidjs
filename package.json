@@ -63,7 +63,7 @@
 		"@types/geojson": "^7946.0.16",
 		"@vitest/browser-playwright": "^5.1.0",
 		"maplibre-gl": "catalog:",
-		"playwright": "1.65.0",
+		"playwright": "1.65.1",
 		"solid-js": "catalog:",
 		"typescript": "catalog:",
 		"vite": "catalog:",
