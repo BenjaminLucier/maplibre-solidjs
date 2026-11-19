@@ -39,6 +39,35 @@ jobs:
       # What would ship: fails if the license files or dist are missing.
       - run: pnpm pack --dry-run
 
+  # The oldest maplibre-gl the peer range allows, so the range can't claim
+  # versions the code doesn't work with. The version comes from
+  # peerDependencies, so raising the floor there moves this job too.
+  maplibre-floor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Outside the lockfile by design: an exact version, read from this
+      # repo's package.json, and old enough to clear pnpm's release-age check.
+      - name: Install the oldest supported maplibre-gl
+        run: | # zizmor: ignore[adhoc-packages]
+          floor="$(jq -r '.peerDependencies["maplibre-gl"]' package.json)"
+          floor="${floor#^}"
+          pnpm add --save-dev --workspace-root "maplibre-gl@$floor"
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - run: pnpm typecheck
+      - run: pnpm test
+
   # The docs site builds against the library's source, so a change that
   # breaks an example fails here rather than on deploy.
   site:
@@ -75,7 +104,7 @@ jobs:
   ci:
     name: CI
     if: always()
-    needs: [check, site, zizmor]
+    needs: [check, maplibre-floor, site, zizmor]
     runs-on: ubuntu-latest
     permissions: {}
     steps:

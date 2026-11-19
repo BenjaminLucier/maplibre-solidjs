@@ -32,7 +32,7 @@
 pnpm add maplibre-solidjs maplibre-gl solid-js @solidjs/web
 ```
 
-Peer dependencies: `solid-js` 2, `@solidjs/web` 2 and `maplibre-gl` 6.
+Peer dependencies: `solid-js` 2, `@solidjs/web` 2 and `maplibre-gl` 6.16 or later.
 
 Import MapLibre's stylesheet once:
 

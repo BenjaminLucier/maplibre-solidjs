@@ -43,6 +43,10 @@ pnpm pack --dry-run
 pnpm site:build
 ```
 
+A second job runs `pnpm typecheck` and `pnpm test` against the oldest
+`maplibre-gl` the peer range allows. If a change needs a newer MapLibre,
+raise the floor in `peerDependencies`, and in the README, in the same PR.
+
 ## Commit messages and PR titles
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/),
